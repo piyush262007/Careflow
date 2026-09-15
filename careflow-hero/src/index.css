@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Variables Theme Tokens — Modern Healthcare Palette */
+:root {
+  /* Light Theme Tokens */
+  --bg-main: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-card-fg: rgba(255, 255, 255, 0.95);
+  --bg-card-mid: rgba(255, 255, 255, 0.88);
+  --bg-card-bg: rgba(241, 245, 249, 0.85);
+  --bg-header: rgba(255, 255, 255, 0.88);
+  --bg-item-hover: rgba(241, 245, 249, 0.9);
+
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
+
+  --border-color: #E2E8F0;
+  --border-subtle: #F1F5F9;
+
+  --shadow-main: 0 20px 48px -8px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 10px 30px -4px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+
+  --grid-line: rgba(34, 197, 94, 0.04);
+  --spotlight-glow: radial-gradient(circle, rgba(34, 197, 94, 0.09) 0%, rgba(37, 99, 235, 0.04) 45%, transparent 70%);
+
+  --chart-line: #2563EB;
+  --chart-fill-start: rgba(37, 99, 235, 0.2);
+  --chart-fill-end: rgba(37, 99, 235, 0);
+
+  /* Flow Glass Tokens (Soft White Healthcare Translucent Glass) */
+  --flow-glass-bg: rgba(255, 255, 255, 0.88);
+  --flow-glass-border: rgba(34, 197, 94, 0.18);
+  --flow-glass-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 1px 0 rgba(34, 197, 94, 0.04);
+  --flow-glass-glow: rgba(34, 197, 94, 0.12);
+}
+
+.dark {
+  /* Dark Theme Tokens (Calm Obsidian Healthcare Mode) */
+  --bg-main: #0B1120;
+  --bg-surface: #131C31;
+  --bg-card-fg: rgba(23, 33, 56, 0.92);
+  --bg-card-mid: rgba(19, 28, 49, 0.82);
+  --bg-card-bg: rgba(15, 23, 42, 0.65);
+  --bg-header: rgba(11, 17, 32, 0.75);
+  --bg-item-hover: rgba(255, 255, 255, 0.05);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-inverse: #0F172A;
+
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+
+  --shadow-main: 0 20px 48px -8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  --shadow-card: 0 12px 32px -6px rgba(0, 0, 0, 0.4);
+
+  --grid-line: rgba(34, 197, 94, 0.04);
+  --spotlight-glow: radial-gradient(circle, rgba(34, 197, 94, 0.08) 0%, rgba(37, 99, 235, 0.03) 45%, transparent 70%);
+
+  --chart-line: #3B82F6;
+  --chart-fill-start: rgba(37, 99, 235, 0.3);
+  --chart-fill-end: rgba(37, 99, 235, 0);
+
+  /* Flow Glass Tokens (Dark Obsidian Healthcare Mode) */
+  --flow-glass-bg: rgba(15, 23, 42, 0.82);
+  --flow-glass-border: rgba(34, 197, 94, 0.22);
+  --flow-glass-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08) inset, inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
+  --flow-glass-glow: rgba(34, 197, 94, 0.2);
+}
+
+html, body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Tap Highlight & Smooth Buttons */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent image flicker & layout shifts */
+img {
+  content-visibility: auto;
+}
+
+/* ═══ CareFlow Signature "Flow Glass" Material ═══ */
+.flow-glass {
+  background: var(--flow-glass-bg);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--flow-glass-border);
+  box-shadow: var(--flow-glass-shadow);
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
+}
+
+.flow-glass-interactive {
+  position: relative;
+  overflow: hidden;
+}
+
+.flow-glass-interactive::before {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background: radial-gradient(circle 250px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.12) 0%, rgba(34, 197, 94, 0.04) 45%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 2;
+}
+
+.flow-glass-interactive:hover::before {
+  opacity: 1;
+}
+
+.flow-glass-interactive:hover {
+  box-shadow: var(--flow-glass-shadow), 0 0 35px -5px var(--flow-glass-glow);
+  transform: translateY(-2px) scale(1.01);
+}
+
+/* Standard Glassmorphism & Solid Card Classes */
+.glass-panel {
+  background: var(--bg-header);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+}
+
+.glass-card-fg {
+  background: var(--bg-card-fg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-main);
+}
+
+.glass-card-mid {
+  background: var(--bg-card-mid);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+}
+
+.glass-card-bg {
+  background: var(--bg-card-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}
+
+/* Background Gradients & Grids */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--text-primary) 0%, #16A34A 50%, #2563EB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .gradient-text {
+  background: linear-gradient(135deg, #FFFFFF 0%, #4ADE80 50%, #3B82F6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Smooth Global Theme Transitions */
+.theme-transition {
+  transition: background-color 400ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 400ms cubic-bezier(0.16, 1, 0.3, 1),
+              color 400ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #16A34A;
+}
