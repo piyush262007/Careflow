@@ -1,0 +1,15 @@
+package com.careflow.patient.repository;
+
+import com.careflow.patient.entity.HealthRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface HealthRecordRepository extends JpaRepository<HealthRecord, Long> {
+
+    List<HealthRecord> findByPatientIdOrderByUploadedAtDesc(Long patientId);
+
+    List<HealthRecord> findByPatientIdAndDoctorIdOrderByUploadedAtDesc(Long patientId, Long doctorId);
+}

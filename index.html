@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareFlow — Smart Healthcare. Seamless Care.</title>
+  <meta name="description" content="CareFlow is a premium, AI-powered healthcare SaaS platform integrating diagnostics, instant doctor matching, secure records, and dynamic health tracking.">
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Dynamic Animated Gradient Mesh Background -->
+  <div class="mesh-bg-container">
+    <div class="mesh-glow glow-1"></div>
+    <div class="mesh-glow glow-2"></div>
+    <div class="mesh-glow glow-3"></div>
+  </div>
+
+  <!-- Transparent Sticky Navbar -->
+  <header class="navbar-header" id="navbar">
+    <div class="container navbar-container">
+      <a href="#home" class="logo-brand">
+        <svg class="logo-svg" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 4C10.268 4 4 10.268 4 18C4 25.732 10.268 32 18 32C25.732 32 32 25.732 32 18C32 10.268 25.732 4 18 4Z" fill="url(#logo-grad-bg)" />
+          <path d="M10 18H14.5L16.5 10L19.5 26L21.5 18H26" stroke="#00F2FE" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="logo-pulse-path" />
+          <defs>
+            <linearGradient id="logo-grad-bg" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#0066CC" />
+              <stop offset="1" stop-color="#008299" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="logo-text">Care<span class="logo-accent">Flow</span></span>
+      </a>
+
+      <nav class="nav-links-wrapper" id="nav-links">
+        <a href="#home" class="nav-link active">Home</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#services" class="nav-link">Services</a>
+        <a href="#doctors" class="nav-link">Doctors</a>
+        <a href="#dashboard" class="nav-link">Dashboard</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Interactive Theme Switcher -->
+        <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle dark/light theme">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <button class="btn btn-ghost login-btn">Log In</button>
+        <button class="btn btn-primary signup-btn glow-effect">Sign Up</button>
+      </div>
+
+      <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="Open navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section scroll-reveal" id="home">
+    <div class="container hero-grid">
+      <!-- Hero Left: Content -->
+      <div class="hero-content">
+        <div class="badge-new-release">
+          <span class="pulse-dot"></span>
+          <span class="badge-text">✨ AI-Powered Healthcare Platform</span>
+        </div>
+        <h1 class="hero-title">
+          Smart Healthcare. <br>
+          <span class="gradient-text animate-gradient">Seamless Care.</span>
+        </h1>
+        <p class="hero-description">
+          Experience the future of medicine with CareFlow. A sleek, highly secure enterprise SaaS platform bringing continuous clinical monitoring, real-time AI triage diagnostics, and on-demand doctor matching under a unified glass dashboard.
+        </p>
+        
+        <div class="hero-ctas">
+          <button class="btn btn-primary btn-large btn-glow-aqua" id="hero-get-started">Get Started</button>
+          <button class="btn btn-secondary btn-large btn-glass" id="hero-book-appointment">
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Book Appointment
+          </button>
+        </div>
+
+        <!-- Trust Stats -->
+        <div class="hero-stats-row">
+          <div class="stat-item">
+            <h4 class="stat-number">12M+</h4>
+            <p class="stat-label">Active Patients</p>
+          </div>
+          <div class="stat-item">
+            <h4 class="stat-number">99.99%</h4>
+            <p class="stat-label">System Uptime</p>
+          </div>
+          <div class="stat-item">
+            <h4 class="stat-number">ISO-27001</h4>
+            <p class="stat-label">HIPAA Encrypted</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Right: Live Interactive Dashboard Mockup -->
+      <div class="hero-visual">
+        <div class="dashboard-mockup glass-card-3d scale-hover" id="hero-dashboard">
+          
+          <!-- Mockup Top Panel -->
+          <div class="mockup-header">
+            <div class="window-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <div class="mockup-search glass-input">
+              <span>🔍 Search Patient Vitals...</span>
+            </div>
+            <div class="mockup-profile">
+              <div class="profile-avatar-mini">
+                <span class="avatar-letter">S</span>
+              </div>
+              <span class="profile-name">Dr. S. Jenkins</span>
+            </div>
+          </div>
+
+          <!-- Mockup Content Grid -->
+          <div class="mockup-body">
+            <!-- Main Live Chart Widget -->
+            <div class="widget main-vitals-widget glass-inner-card">
+              <div class="widget-header">
+                <div class="widget-title-area">
+                  <span class="pulse-indicator-green"></span>
+                  <h4 class="widget-title">Predictive AI Analytics</h4>
+                </div>
+                <div class="widget-metrics">
+                  <span class="live-pulse-num" id="live-wellness">98.4</span> <span class="unit">% Wellness</span>
+                </div>
+              </div>
+              <!-- Interactive Spline Canvas -->
+              <div class="chart-container">
+                <svg class="ecg-svg" id="spline-graph" width="100%" height="110" viewBox="0 0 500 110" preserveAspectRatio="none">
+                  <!-- Grid -->
+                  <path class="ecg-grid" d="M 0,22 L 500,22 M 0,44 L 500,44 M 0,66 L 500,66 M 0,88 L 500,88" stroke="var(--border-light)" stroke-width="0.5" stroke-dasharray="3,3" />
+                  
+                  <!-- Area 2 (Primary/Blue background fill) -->
+                  <path class="spline-area-blue" d="M 0,80 Q 80,40 160,65 T 320,40 T 500,60 L 500,110 L 0,110 Z" fill="url(#area-grad-blue)" opacity="0.08" />
+                  <!-- Line 2 (Primary Blue) -->
+                  <path class="spline-line-blue" d="M 0,80 Q 80,40 160,65 T 320,40 T 500,60" fill="none" stroke="var(--primary)" stroke-width="1.8" opacity="0.6" />
+                  
+                  <!-- Area 1 (Neon Aqua foreground fill) -->
+                  <path class="spline-area-aqua" d="M 0,90 Q 70,30 150,55 T 300,30 T 500,45 L 500,110 L 0,110 Z" fill="url(#area-grad-aqua)" opacity="0.14" />
+                  <!-- Line 1 (Neon Aqua) -->
+                  <path class="spline-line-aqua" d="M 0,90 Q 70,30 150,55 T 300,30 T 500,45" fill="none" stroke="var(--neon-aqua)" stroke-width="2.5" />
+                  
+                  <!-- Scanning Vertical Tracker Line -->
+                  <line id="tracker-line" x1="0" y1="0" x2="0" y2="110" stroke="var(--border-heavy)" stroke-width="1" stroke-dasharray="2,2" />
+                  <!-- Active Pulse Scanning Circle Node -->
+                  <circle id="tracker-node" cx="0" cy="0" r="4.5" fill="#ffffff" stroke="var(--neon-aqua)" stroke-width="2.5" />
+
+                  <defs>
+                    <linearGradient id="area-grad-aqua" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.8" />
+                      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" />
+                    </linearGradient>
+                    <linearGradient id="area-grad-blue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.6" />
+                      <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.0" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Mini Vitals Dashboard -->
+            <div class="mockup-row-dual">
+              <!-- Vital Card 1 -->
+              <div class="widget glass-inner-card status-stable">
+                <div class="widget-meta">Blood Pressure</div>
+                <div class="widget-value-row">
+                  <span class="widget-value">120/80</span>
+                  <span class="widget-unit">mmHg</span>
+                </div>
+                <div class="widget-status-badge green">Stable</div>
+              </div>
+
+              <!-- Vital Card 2 -->
+              <div class="widget glass-inner-card status-excellent">
+                <div class="widget-meta">Oxygen Level</div>
+                <div class="widget-value-row">
+                  <span class="widget-value">98.5</span>
+                  <span class="widget-unit">%</span>
+                </div>
+                <div class="widget-status-badge cyan">Optimal</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Glass Cards Over Mockup -->
+          <div class="floating-glass-card fc-1 glass-card scale-hover-small">
+            <div class="fc-icon">🧠</div>
+            <div class="fc-info">
+              <h5 class="fc-title">AI Diagnostics</h5>
+              <p class="fc-desc">Cognitive analysis active</p>
+            </div>
+            <span class="fc-badge pulse-active">Scanning</span>
+          </div>
+
+          <div class="floating-glass-card fc-2 glass-card scale-hover-small">
+            <div class="fc-icon">📞</div>
+            <div class="fc-info">
+              <h5 class="fc-title">Dr. M. Chen</h5>
+              <p class="fc-desc">Ready for video call</p>
+            </div>
+            <button class="fc-action-btn pulse-glow">Join</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section scroll-reveal" id="features">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-tag font-outfit">INTELLIGENCE SYSTEM</span>
+        <h2 class="section-title">Intelligence at Every Touchpoint</h2>
+        <p class="section-subtitle">A state-of-the-art suite built to deliver premium, real-time medical logistics and high-speed patient interactions.</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature Card 1 -->
+        <div class="feature-card glass-card hover-lift" data-tilt>
+          <div class="feature-icon-wrapper f-grad-1">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a10 10 0 0 1 7.54 16.59A4 4 0 0 0 16 15H8a4 4 0 0 0-3.54 3.59A10 10 0 0 1 12 2z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <h3 class="feature-card-title">AI Health Assistant</h3>
+          <p class="feature-card-desc">24/7 intelligent symptom assessment and personalized wellness triage driven by advanced neural modeling.</p>
+        </div>
+
+        <!-- Feature Card 2 -->
+        <div class="feature-card glass-card hover-lift" data-tilt>
+          <div class="feature-icon-wrapper f-grad-2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <h3 class="feature-card-title">Smart Booking</h3>
+          <p class="feature-card-desc">Instant scheduling integrated with physician calendars, local availability calendars, and clinic flow tracking.</p>
+        </div>
+
+        <!-- Feature Card 3 -->
+        <div class="feature-card glass-card hover-lift" data-tilt>
+          <div class="feature-icon-wrapper f-grad-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <h3 class="feature-card-title">Digital Medical Records</h3>
+          <p class="feature-card-desc">Unified, decentralized, and encrypted health records accessible globally in milliseconds under top-tier safety blocks.</p>
+        </div>
+
+        <!-- Feature Card 4 -->
+        <div class="feature-card glass-card hover-lift" data-tilt>
+          <div class="feature-icon-wrapper f-grad-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <h3 class="feature-card-title">Real-Time Doctor Chat</h3>
+          <p class="feature-card-desc">Secure HIPAA-compliant instant messaging, diagnostic photo attachments, and fluid live chat sessions with care advisors.</p>
+        </div>
+
+        <!-- Feature Card 5 -->
+        <div class="feature-card glass-card hover-lift" data-tilt>
+          <div class="feature-icon-wrapper f-grad-5">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <h3 class="feature-card-title">Emergency Care</h3>
+          <p class="feature-card-desc">One-click critical alert system routing dynamic telemetry directly to the nearest trauma centers and emergency response.</p>
+        </div>
+
+        <!-- Feature Card 6 -->
+        <div class="feature-card glass-card hover-lift" data-tilt>
+          <div class="feature-icon-wrapper f-grad-6">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+          </div>
+          <h3 class="feature-card-title">Health Analytics</h3>
+          <p class="feature-card-desc">Predictive longitudinal modeling showing long-term trends, stress indices, and wearable micro-vital variances.</p>
+        </div>
+
+        <!-- Feature Card 7 -->
+        <div class="feature-card glass-card hover-lift" data-tilt>
+          <div class="feature-icon-wrapper f-grad-7">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 7a2 2 0 0 0-2-2h-4l-3-3H10L7 5H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V7z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+          </div>
+          <h3 class="feature-card-title">Video Consultation</h3>
+          <p class="feature-card-desc">Ultra-HD low-latency telehealth sessions featuring automatic transcription, translation, and electronic prescription.</p>
+        </div>
+
+        <!-- Feature Card 8 -->
+        <div class="feature-card glass-card hover-lift" data-tilt>
+          <div class="feature-icon-wrapper f-grad-8">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h3 class="feature-card-title">Patient Portal</h3>
+          <p class="feature-card-desc">A beautiful control center giving patients absolute sovereignty over billing history, labs, claims, and medical consent.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Specialized Care Section -->
+  <section class="services-section scroll-reveal" id="services">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-tag font-outfit">CLINICAL DOMAINS</span>
+        <h2 class="section-title">Specialized Care, Redefined</h2>
+        <p class="section-subtitle">Deploying specialized workflows across our core medical focus groups to deliver elite therapeutic accuracy.</p>
+      </div>
+
+      <div class="services-grid">
+        <!-- Service Card 1: Cardiology -->
+        <div class="service-card hover-zoom glass-card">
+          <div class="service-image-placeholder">
+            <svg class="clinical-art" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="animated-beat" d="M15 50 H35 L42 25 L50 75 L58 40 L65 50 H85" stroke="var(--neon-aqua)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="service-body">
+            <h3 class="service-title">Cardiology</h3>
+            <p class="service-desc">Advanced cardiovascular modeling, real-time stress testing analytics, remote arrhythmia monitoring, and remote monitoring.</p>
+          </div>
+        </div>
+
+        <!-- Service Card 2: Neurology -->
+        <div class="service-card hover-zoom glass-card">
+          <div class="service-image-placeholder">
+            <svg class="clinical-art" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Styled Neural Net representation -->
+              <circle cx="50" cy="50" r="7" fill="var(--neon-aqua)" />
+              <circle cx="28" cy="32" r="5.5" fill="var(--primary)" />
+              <circle cx="72" cy="32" r="5.5" fill="var(--primary)" />
+              <circle cx="28" cy="68" r="5.5" fill="var(--secondary)" />
+              <circle cx="72" cy="68" r="5.5" fill="var(--secondary)" />
+              <line x1="50" y1="50" x2="28" y2="32" stroke="var(--neon-aqua)" stroke-width="2" stroke-dasharray="3,3"/>
+              <line x1="50" y1="50" x2="72" y2="32" stroke="var(--neon-aqua)" stroke-width="2" stroke-dasharray="3,3"/>
+              <line x1="50" y1="50" x2="28" y2="68" stroke="var(--neon-aqua)" stroke-width="2"/>
+              <line x1="50" y1="50" x2="72" y2="68" stroke="var(--neon-aqua)" stroke-width="2"/>
+              <line x1="28" y1="32" x2="28" y2="68" stroke="var(--border-heavy)" stroke-width="1.5"/>
+              <line x1="72" y1="32" x2="72" y2="68" stroke="var(--border-heavy)" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="service-body">
+            <h3 class="service-title">Neurology</h3>
+            <p class="service-desc">Neuro-synaptic mapping, quantitative EEG modeling, cognitive degradation screening, and precision brain health assessments.</p>
+          </div>
+        </div>
+
+        <!-- Service Card 3: Diagnostics -->
+        <div class="service-card hover-zoom glass-card">
+          <div class="service-image-placeholder">
+            <svg class="clinical-art" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M25 65 L42 48 L55 60 L78 30" stroke="var(--neon-aqua)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="78" cy="30" r="6" fill="var(--primary)" stroke="var(--neon-aqua)" stroke-width="2" />
+              <circle cx="42" cy="48" r="5" fill="var(--primary)" />
+              <circle cx="55" cy="60" r="5" fill="var(--primary)" />
+            </svg>
+          </div>
+          <div class="service-body">
+            <h3 class="service-title">Diagnostics</h3>
+            <p class="service-desc">AI-assisted diagnostic scans, molecular sequence evaluations, rapid viral/pathogen sequencing panels, and lab report modeling.</p>
+          </div>
+        </div>
+
+        <!-- Service Card 4: Orthopedics -->
+        <div class="service-card hover-zoom glass-card">
+          <div class="service-image-placeholder">
+            <svg class="clinical-art" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Spine illustration -->
+              <rect x="47" y="15" width="6" height="6" rx="2" fill="var(--neon-aqua)" />
+              <rect x="45" y="25" width="10" height="7" rx="2" fill="var(--neon-aqua)" />
+              <rect x="43" y="36" width="14" height="8" rx="2.5" fill="var(--primary)" />
+              <rect x="41" y="48" width="18" height="9" rx="3" fill="var(--primary)" />
+              <rect x="38" y="61" width="24" height="10" rx="3.5" fill="var(--secondary)" />
+              <rect x="35" y="75" width="30" height="11" rx="4" fill="var(--secondary)" />
+            </svg>
+          </div>
+          <div class="service-body">
+            <h3 class="service-title">Orthopedics</h3>
+            <p class="service-desc">Biomechanical joint telemetry, computerized orthopedic strain calculations, rapid skeletal structural rehabilitation plans.</p>
+          </div>
+        </div>
+
+        <!-- Service Card 5: Pediatrics -->
+        <div class="service-card hover-zoom glass-card">
+          <div class="service-image-placeholder">
+            <svg class="clinical-art" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Child growth steps -->
+              <rect x="22" y="62" width="12" height="18" rx="2.5" fill="var(--secondary)" />
+              <rect x="44" y="44" width="12" height="36" rx="2.5" fill="var(--primary)" />
+              <rect x="66" y="26" width="12" height="54" rx="2.5" fill="var(--neon-aqua)" />
+              <circle cx="28" cy="50" r="4.5" fill="var(--neon-aqua)" />
+              <circle cx="50" cy="32" r="4.5" fill="var(--neon-aqua)" />
+              <circle cx="72" cy="14" r="4.5" fill="var(--neon-aqua)" />
+            </svg>
+          </div>
+          <div class="service-body">
+            <h3 class="service-title">Pediatrics</h3>
+            <p class="service-desc">Continuous growth pattern modeling, family health records mapping, customized childhood vaccination and vitals systems.</p>
+          </div>
+        </div>
+
+        <!-- Service Card 6: Emergency Medicine -->
+        <div class="service-card hover-zoom glass-card">
+          <div class="service-image-placeholder">
+            <svg class="clinical-art" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Glowing Red Cross style inside medical shield -->
+              <path d="M50 15 L80 32 V62 L50 82 L20 62 V32 Z" stroke="var(--neon-aqua)" stroke-width="3" stroke-linejoin="round" fill="none"/>
+              <rect x="45" y="33" width="10" height="28" rx="2.5" fill="var(--neon-aqua)" />
+              <rect x="36" y="42" width="28" height="10" rx="2.5" fill="var(--neon-aqua)" />
+            </svg>
+          </div>
+          <div class="service-body">
+            <h3 class="service-title">Emergency Medicine</h3>
+            <p class="service-desc">Instant 1-click critical status dispatch, pre-arrival vital streaming to ER wards, and ambulance telemetry routing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works-section scroll-reveal" id="how-it-works">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-tag font-outfit">WORKFLOW PROTOCOL</span>
+        <h2 class="section-title">Designed for Modern Care</h2>
+        <p class="section-subtitle">Three seamless digital configurations that unite you with premium, instantaneous healthcare services.</p>
+      </div>
+
+      <div class="timeline-wrapper">
+        <!-- Connecting Animated Progress Line -->
+        <div class="timeline-progress-bar">
+          <div class="timeline-fill" id="timeline-scroll-fill"></div>
+        </div>
+
+        <div class="timeline-grid">
+          <!-- Step 1 -->
+          <div class="timeline-step">
+            <div class="step-num-node">
+              <div class="step-num-glow"></div>
+              <span class="step-num font-outfit">01</span>
+            </div>
+            <div class="step-card glass-card hover-lift">
+              <h3 class="step-title">1. Register Profile</h3>
+              <p class="step-desc">Complete a secure, encrypted clinical biometrics profile. Sync your health metrics from Smartwatches and wearable devices in under 60 seconds.</p>
+              <div class="step-visual">
+                <span class="pulse-ring-slow"></span>
+                <span class="step-status">Configured System</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="timeline-step">
+            <div class="step-num-node">
+              <div class="step-num-glow"></div>
+              <span class="step-num font-outfit">02</span>
+            </div>
+            <div class="step-card glass-card hover-lift">
+              <h3 class="step-title">2. Book Appointment</h3>
+              <p class="step-desc">Our AI triaging engine matches your symptoms with the ideal certified specialist. Book an instant high-fidelity video consult or in-person checkup.</p>
+              <div class="step-visual">
+                <span class="pulse-ring-slow cyan"></span>
+                <span class="step-status cyan-text">Matching Doctor...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="timeline-step">
+            <div class="step-num-node">
+              <div class="step-num-glow"></div>
+              <span class="step-num font-outfit">03</span>
+            </div>
+            <div class="step-card glass-card hover-lift">
+              <h3 class="step-title">3. Receive Smart Care</h3>
+              <p class="step-desc">Connect on your screen, download instant prescription slips, configure home diagnostics, and receive constant vitals supervision.</p>
+              <div class="step-visual">
+                <span class="pulse-ring-slow active"></span>
+                <span class="step-status active-text">Continuous Monitoring</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Doctor Showcase Section -->
+  <section class="doctors-section scroll-reveal" id="doctors">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-tag font-outfit">ELITE CLINICIANS</span>
+        <h2 class="section-title">Meet Our Digital Care Team</h2>
+        <p class="section-subtitle">Elite board-certified physicians, aided by AI-augmented decision support systems, standing by for prompt consultation.</p>
+      </div>
+
+      <div class="doctors-grid">
+        <!-- Doctor Card 1 -->
+        <div class="doctor-card glass-card hover-lift">
+          <div class="doc-avatar-container">
+            <div class="doc-avatar">
+              <!-- Futuristic Holographic Glass doctor avatar -->
+              <svg viewBox="0 0 100 100" fill="none" class="doc-portrait-svg">
+                <!-- Outer glow outline shoulders -->
+                <path d="M25 80 C 25 58, 75 58, 75 80 Z" fill="var(--glass-bg)" stroke="var(--primary)" stroke-width="2" />
+                <!-- Outer glow outline head -->
+                <circle cx="50" cy="38" r="18" fill="var(--glass-bg)" stroke="var(--primary)" stroke-width="2" />
+                <!-- Neon glowing stethoscope details -->
+                <path d="M40 48 Q 50 63 60 48" stroke="var(--neon-aqua)" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <rect x="47" y="55" width="6" height="13" rx="3" fill="var(--secondary)" stroke="var(--neon-aqua)" stroke-width="1" />
+              </svg>
+            </div>
+            <div class="doc-status-badge available">
+              <span class="pulse-dot"></span>
+              Available Now
+            </div>
+          </div>
+
+          <div class="doc-body">
+            <div class="doc-rating">
+              <span class="stars">⭐⭐⭐⭐⭐</span>
+              <span class="rating-num">5.0</span>
+            </div>
+            <h3 class="doc-name">Dr. Evelyn Sterling, MD</h3>
+            <p class="doc-specialty">Cardiovascular Specialist</p>
+            <div class="doc-meta-row">
+              <div class="meta-tag">💼 12 Yrs Exp</div>
+              <div class="meta-tag">🏥 Yale Health</div>
+            </div>
+            <button class="btn btn-secondary btn-full book-doc-btn" data-doc="Dr. Evelyn Sterling">Book Appointment</button>
+          </div>
+        </div>
+
+        <!-- Doctor Card 2 -->
+        <div class="doctor-card glass-card hover-lift">
+          <div class="doc-avatar-container">
+            <div class="doc-avatar">
+              <!-- Futuristic Holographic Glass doctor avatar -->
+              <svg viewBox="0 0 100 100" fill="none" class="doc-portrait-svg">
+                <path d="M25 80 C 25 58, 75 58, 75 80 Z" fill="var(--glass-bg)" stroke="var(--primary)" stroke-width="2" />
+                <circle cx="50" cy="38" r="18" fill="var(--glass-bg)" stroke="var(--primary)" stroke-width="2" />
+                <path d="M38 50 Q 50 65 62 50" stroke="var(--neon-aqua)" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <rect x="47" y="57" width="6" height="11" rx="3" fill="var(--secondary)" stroke="var(--neon-aqua)" stroke-width="1" />
+              </svg>
+            </div>
+            <div class="doc-status-badge in-call">
+              <span class="pulse-dot orange"></span>
+              In Consultation
+            </div>
+          </div>
+
+          <div class="doc-body">
+            <div class="doc-rating">
+              <span class="stars">⭐⭐⭐⭐⭐</span>
+              <span class="rating-num">4.9</span>
+            </div>
+            <h3 class="doc-name">Dr. Marcus Vance, PhD</h3>
+            <p class="doc-specialty">Senior Neuroscientist</p>
+            <div class="doc-meta-row">
+              <div class="meta-tag">💼 15 Yrs Exp</div>
+              <div class="meta-tag">🏥 Stanford Clinic</div>
+            </div>
+            <button class="btn btn-secondary btn-full book-doc-btn" data-doc="Dr. Marcus Vance">Book Appointment</button>
+          </div>
+        </div>
+
+        <!-- Doctor Card 3 -->
+        <div class="doctor-card glass-card hover-lift">
+          <div class="doc-avatar-container">
+            <div class="doc-avatar">
+              <!-- Futuristic Holographic Glass doctor avatar -->
+              <svg viewBox="0 0 100 100" fill="none" class="doc-portrait-svg">
+                <path d="M25 80 C 25 58, 75 58, 75 80 Z" fill="var(--glass-bg)" stroke="var(--primary)" stroke-width="2" />
+                <circle cx="50" cy="38" r="18" fill="var(--glass-bg)" stroke="var(--primary)" stroke-width="2" />
+                <path d="M39 49 Q 50 64 61 49" stroke="var(--neon-aqua)" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <rect x="47" y="56" width="6" height="12" rx="3" fill="var(--secondary)" stroke="var(--neon-aqua)" stroke-width="1" />
+              </svg>
+            </div>
+            <div class="doc-status-badge scheduled">
+              <span class="pulse-dot cyan"></span>
+              Available in 20m
+            </div>
+          </div>
+
+          <div class="doc-body">
+            <div class="doc-rating">
+              <span class="stars">⭐⭐⭐⭐⭐</span>
+              <span class="rating-num">4.8</span>
+            </div>
+            <h3 class="doc-name">Dr. Alaina Croft, MD</h3>
+            <p class="doc-specialty">Consultant Pediatrician</p>
+            <div class="doc-meta-row">
+              <div class="meta-tag">💼 9 Yrs Exp</div>
+              <div class="meta-tag">🏥 Johns Hopkins</div>
+            </div>
+            <button class="btn btn-secondary btn-full book-doc-btn" data-doc="Dr. Alaina Croft">Book Appointment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mobile App Section -->
+  <section class="mobile-section scroll-reveal" id="dashboard">
+    <div class="container mobile-grid">
+      <!-- Left side: smartphone design -->
+      <div class="mobile-visual">
+        <div class="iphone-chassis glass-card-3d">
+          <div class="iphone-notch"></div>
+          <div class="iphone-screen">
+            <!-- App UI Header -->
+            <div class="app-header">
+              <div class="app-profile">
+                <div class="app-avatar">
+                  <span>P</span>
+                </div>
+                <div>
+                  <div class="app-greet">Welcome back,</div>
+                  <div class="app-username">Patrice R.</div>
+                </div>
+              </div>
+              <span class="app-notif-bell">🔔</span>
+            </div>
+
+            <!-- App Dashboard Panel -->
+            <div class="app-vitals-box glass-inner-card">
+              <div class="app-vb-title">Cardiac Sensor</div>
+              <div class="app-vb-row">
+                <span class="app-vb-value">72</span>
+                <span class="app-vb-unit">bpm</span>
+                <span class="app-vb-state">Normal</span>
+              </div>
+              <div class="app-vb-sub">Updated 2 minutes ago via Apple Health</div>
+            </div>
+
+            <!-- Live mini ECG app -->
+            <div class="app-mini-chart glass-inner-card">
+              <div class="app-chart-header">
+                <span>Vitals Waveform</span>
+                <span class="waveform-live">LIVE</span>
+              </div>
+              <div class="app-waveform-area">
+                <div class="wave-bar"></div>
+                <div class="wave-bar tall"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar small"></div>
+                <div class="wave-bar tall"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar tall"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+              </div>
+            </div>
+
+            <!-- Quick chat interface inside app -->
+            <div class="app-ai-snippet glass-inner-card">
+              <div class="app-ai-header">🤖 CareFlow AI Triage</div>
+              <div class="app-ai-body">
+                "Hello Patrice! I noticed your resting heart rate has been steady. Keep it up!"
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Glass Notifications -->
+        <div class="floating-notif-card fnc-1 glass-card scale-hover-small">
+          <div class="fnc-dot"></div>
+          <div class="fnc-content">
+            <h5 class="fnc-title">Activity Alert</h5>
+            <p class="fnc-desc">Heart rate spiked to 118 BPM during routine stroll.</p>
+          </div>
+        </div>
+
+        <div class="floating-notif-card fnc-2 glass-card scale-hover-small">
+          <div class="fnc-dot blue"></div>
+          <div class="fnc-content">
+            <h5 class="fnc-title">Report Dispatched</h5>
+            <p class="fnc-desc">Cardiac structural vitals sent to Dr. Evelyn Sterling.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: Copy details -->
+      <div class="mobile-content">
+        <span class="section-tag font-outfit">MOBILE SYNCHRONICITY</span>
+        <h2 class="section-title">Your Health, Integrated In Your Pocket</h2>
+        <p class="section-subtitle">The CareFlow smartphone application binds directly to smart sensors and wearables (Apple Watch, Fitbit, WHOOP), compiling complex biometric telemetries straight into clinical updates.</p>
+        
+        <ul class="mobile-features-list">
+          <li>
+            <span class="li-icon">✔️</span>
+            <div>
+              <strong>Instant Notifications:</strong> Get real-time updates regarding vitals anomalies or prescription confirmations.
+            </div>
+          </li>
+          <li>
+            <span class="li-icon">✔️</span>
+            <div>
+              <strong>Wearable Connectivity:</strong> Synchronize high-frequency metrics (sleep, stress levels, blood pressure) without latency.
+            </div>
+          </li>
+          <li>
+            <span class="li-icon">✔️</span>
+            <div>
+              <strong>HIPAA Safe Transfer:</strong> Instantly share encrypted medical profiles with doctors using dynamic QR protocols.
+            </div>
+          </li>
+        </ul>
+
+        <div class="store-badge-row">
+          <!-- App Store -->
+          <a href="#" class="store-btn glass-card scale-hover-small">
+            <svg class="store-svg" viewBox="0 0 24 24" width="22" height="22">
+              <path fill="currentColor" d="M18.71,19.5C17.88,20.74,17,21.95,15.66,22c-1.31,0-1.72-.8-3.22-.8s-2,.78-3.24,.82c-1.34,0-2.27-1.2-3.11-2.42C4.38,17.1,3.06,12,4.82,9a4.89,4.89,0,0,1,4.11-2.5c1.31,0,2.54,.9,3.35,.9s2.32-1.07,3.88-.91A4.66,4.66,0,0,1,19.9,8.7c-.12,.08-2.31,1.35-2.29,4a3.86,3.86,0,0,0,2.56,3.67A9.82,9.82,0,0,1,18.71,19.5M15.9,4.17a4.67,4.67,0,0,0,1.07-3.37,4.85,4.85,0,0,0-3.19,1.66,4.42,4.42,0,0,0-1.12,3.27A4.28,4.28,0,0,0,15.9,4.17Z"/>
+            </svg>
+            <div class="store-info">
+              <span class="store-sub font-outfit">Download on the</span>
+              <span class="store-main font-outfit">App Store</span>
+            </div>
+          </a>
+
+          <!-- Google Play -->
+          <a href="#" class="store-btn glass-card scale-hover-small">
+            <svg class="store-svg" viewBox="0 0 24 24" width="22" height="22">
+              <path fill="currentColor" d="M3,5.27V18.73L16.55,12L3,5.27M17.87,11.33L20.25,12.5C20.75,12.75,20.75,13.25,20.25,13.5L17.87,14.67L16.55,12L17.87,11.33M3,3.75L16.55,10.5L12,12L3,3.75M3,20.25L12,12L16.55,13.5L3,20.25Z"/>
+            </svg>
+            <div class="store-info">
+              <span class="store-sub font-outfit">Get it on</span>
+              <span class="store-main font-outfit">Google Play</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section scroll-reveal" id="testimonials">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-tag font-outfit">PATIENT & DOCTOR REVIEWS</span>
+        <h2 class="section-title">Trusted by Modern Providers</h2>
+        <p class="section-subtitle">See how healthcare clinics and patient advocacy groups deploy CareFlow to completely restructure wellness.</p>
+      </div>
+
+      <!-- Carousel Container -->
+      <div class="testimonial-carousel-container">
+        <div class="testimonial-track" id="testimonial-track">
+          <!-- Slide 1 -->
+          <div class="testimonial-card glass-card">
+            <div class="t-rating">⭐⭐⭐⭐⭐</div>
+            <p class="t-quote">"Implementing CareFlow has dropped our clinic triage overhead by 37%. The dynamic vitals dashboard aggregates critical health panels before the patient even launches the secure video call. Brilliant design!"</p>
+            <div class="t-user">
+              <div class="t-avatar">
+                <span>SJ</span>
+              </div>
+              <div class="t-meta">
+                <h5 class="t-name">Dr. Sarah Jenkins, MD</h5>
+                <p class="t-role">Clinical Advisor, Austin MedGroup</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="testimonial-card glass-card">
+            <div class="t-rating">⭐⭐⭐⭐⭐</div>
+            <p class="t-quote">"The symptom triaging bot is stunningly accurate. As a cardiac patient, having real-time wearable integration and instant telemetry matching makes me feel profoundly safe. Highest-quality SaaS UI on the market."</p>
+            <div class="t-user">
+              <div class="t-avatar">
+                <span>PR</span>
+              </div>
+              <div class="t-meta">
+                <h5 class="t-name">Patrice R.</h5>
+                <p class="t-role">CareFlow Active Patient, Austin, TX</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="testimonial-card glass-card">
+            <div class="t-rating">⭐⭐⭐⭐⭐</div>
+            <p class="t-quote">"As an investor in medical technology, I look for tools that solve actual HIPAA bottle-necks. CareFlow's encrypted health record sharing and beautiful UX set it years ahead of existing legacy competitors."</p>
+            <div class="t-user">
+              <div class="t-avatar">
+                <span>WL</span>
+              </div>
+              <div class="t-meta">
+                <h5 class="t-name">Warren L.</h5>
+                <p class="t-role">Managing Director, Helix VC</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel navigation -->
+        <div class="carousel-nav-dots">
+          <span class="nav-dot active" data-index="0"></span>
+          <span class="nav-dot" data-index="1"></span>
+          <span class="nav-dot" data-index="2"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modern Multi-Column Footer -->
+  <footer class="footer-section scroll-reveal" id="contact">
+    <div class="container footer-grid">
+      <!-- Brand column -->
+      <div class="footer-brand-col">
+        <a href="#home" class="logo-brand">
+          <svg class="logo-svg" width="30" height="30" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 4C10.268 4 4 10.268 4 18C4 25.732 10.268 32 18 32C25.732 32 32 25.732 32 18C32 10.268 25.732 4 18 4Z" fill="url(#logo-grad-bg-f)" />
+            <path d="M10 18H14.5L16.5 10L19.5 26L21.5 18H26" stroke="#00F2FE" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            <defs>
+              <linearGradient id="logo-grad-bg-f" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#0066CC" />
+                <stop offset="1" stop-color="#008299" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="logo-text">Care<span class="logo-accent">Flow</span></span>
+        </a>
+        <p class="footer-brand-desc">
+          State-of-the-art medical digital logistics, connecting global clinics, wearable data, and clinical AI assistants inside a unified dashboard ecosystem.
+        </p>
+        <div class="social-links-row">
+          <a href="#" class="social-link" aria-label="Twitter">🐦</a>
+          <a href="#" class="social-link" aria-label="LinkedIn">💼</a>
+          <a href="#" class="social-link" aria-label="GitHub">💻</a>
+          <a href="#" class="social-link" aria-label="Instagram">📸</a>
+        </div>
+      </div>
+
+      <!-- Links column 1 -->
+      <div class="footer-links-col">
+        <h4 class="footer-title">Platform</h4>
+        <ul class="footer-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#dashboard">Dashboard API</a></li>
+          <li><a href="#services">Clinical Modules</a></li>
+          <li><a href="#doctors">Consultations</a></li>
+          <li><a href="#">System Integrity</a></li>
+        </ul>
+      </div>
+
+      <!-- Links column 2 -->
+      <div class="footer-links-col">
+        <h4 class="footer-title">Governance</h4>
+        <ul class="footer-links">
+          <li><a href="#">HIPAA Compliance</a></li>
+          <li><a href="#">GDPR & Cryptography</a></li>
+          <li><a href="#">Patient Consent</a></li>
+          <li><a href="#">Terms of Protocol</a></li>
+          <li><a href="#">Audit Disclosures</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter column -->
+      <div class="footer-newsletter-col">
+        <h4 class="footer-title">Subscribe to HealthFlow</h4>
+        <p class="newsletter-sub">Get direct briefings regarding new AI diagnostic thresholds, platform additions, and clinical safety updates.</p>
+        <form class="newsletter-form" id="newsletter-form">
+          <input type="email" placeholder="Your clinical email..." required class="newsletter-input glass-input">
+          <button type="submit" class="btn btn-primary newsletter-submit-btn">Join</button>
+        </form>
+        <div id="newsletter-success" class="newsletter-success-msg" style="display: none;">
+          ✨ Registration complete. Welcome to CareFlow!
+        </div>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="container footer-bottom">
+      <div class="bottom-flex">
+        <span>© 2026 CareFlow Inc. All clinical rights reserved.</span>
+        <div class="bottom-links">
+          <a href="#">Security Protocol</a>
+          <a href="#">SLA Agreement</a>
+          <a href="#">Clinic Directory</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive AI Assistant Triage Chatbot Overlay -->
+  <div class="ai-widget-container" id="ai-chat-widget">
+    <button class="ai-widget-trigger pulse-glow-widget" id="ai-chat-trigger" aria-label="Open AI health assistant">
+      <span class="trigger-unread" id="unread-dot">1</span>
+      <span class="trigger-icon">🤖</span>
+    </button>
+
+    <div class="ai-chat-window glass-card" id="ai-chat-window" style="display: none;">
+      <div class="ai-window-header">
+        <div class="header-details">
+          <span class="ai-header-bot-dot"></span>
+          <div>
+            <h4 class="ai-bot-name">CareFlow Neural Triage</h4>
+            <p class="ai-bot-status font-outfit">Active Diagnostic Model v4.2</p>
+          </div>
+        </div>
+        <button class="ai-window-close" id="ai-chat-close">✖</button>
+      </div>
+
+      <div class="ai-messages-container" id="ai-messages">
+        <!-- System Message -->
+        <div class="message system-msg">
+          🔐 Conversation is fully end-to-end encrypted under HIPAA guidelines. CareFlow AI provides symptom tracking, not hospital diagnosis.
+        </div>
+        <!-- Bot Message -->
+        <div class="message bot-msg">
+          Hello! I am your CareFlow AI assistant. I can help triage symptoms, analyze wearable metrics, or recommend specialists. What wellness questions can I resolve for you today?
+        </div>
+      </div>
+
+      <!-- Quick prompts -->
+      <div class="ai-quick-prompts">
+        <button class="btn btn-xs btn-glass quick-prompt-btn" data-text="What are typical high blood pressure warnings?">💓 BP Warnings</button>
+        <button class="btn btn-xs btn-glass quick-prompt-btn" data-text="Arrange consultation with a cardiologist.">📅 Cardo Slot</button>
+        <button class="btn btn-xs btn-glass quick-prompt-btn" data-text="Is my biometric data secure?">🔐 HIPAA Privacy</button>
+      </div>
+
+      <div class="ai-input-area">
+        <input type="text" placeholder="Type symptoms or questions..." class="ai-chat-input glass-input" id="ai-message-input">
+        <button class="btn btn-primary ai-send-btn" id="ai-send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Appointment Booking Modal -->
+  <div class="booking-modal-overlay" id="booking-modal" style="display: none;">
+    <div class="booking-modal-content glass-card">
+      <div class="modal-header">
+        <h3 class="modal-headline">Schedule Clinical Appointment</h3>
+        <button class="modal-close-btn" id="modal-close">✖</button>
+      </div>
+
+      <form id="appointment-booking-form">
+        <!-- Doctor Select -->
+        <div class="form-group">
+          <label class="form-label font-outfit">Select Medical Professional</label>
+          <select class="form-control glass-input" id="select-doctor" required>
+            <option value="Dr. Evelyn Sterling">Dr. Evelyn Sterling, MD — Cardiology ($150 / consult)</option>
+            <option value="Dr. Marcus Vance">Dr. Marcus Vance, PhD — Neurology ($180 / consult)</option>
+            <option value="Dr. Alaina Croft">Dr. Alaina Croft, MD — Pediatrics ($120 / consult)</option>
+            <option value="AI Digital Triage">CareFlow Neural Triage — Instant consultation (Free)</option>
+          </select>
+        </div>
+
+        <!-- Appointment Type -->
+        <div class="form-group">
+          <label class="form-label font-outfit">Consultation Framework</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="consultation-type" value="Video Consult" checked required>
+              <span>🖥️ Secure Video Consult</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="consultation-type" value="In-Clinic Visit" required>
+              <span>🏥 In-Clinic Assessment</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row-dual">
+          <!-- Date Select -->
+          <div class="form-group">
+            <label class="form-label font-outfit">Select Date</label>
+            <input type="date" class="form-control glass-input" id="booking-date" required>
+          </div>
+          <!-- Time Select -->
+          <div class="form-group">
+            <label class="form-label font-outfit">Available Slots</label>
+            <select class="form-control glass-input" id="booking-time" required>
+              <option value="09:00 AM">09:00 AM (EST)</option>
+              <option value="10:30 AM">10:30 AM (EST)</option>
+              <option value="01:00 PM">01:00 PM (EST)</option>
+              <option value="03:30 PM">03:30 PM (EST)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Patient Health Context -->
+        <div class="form-group">
+          <label class="form-label font-outfit">Current Symptoms / Clinical Notes</label>
+          <textarea class="form-control glass-input textarea-control" id="booking-notes" rows="3" placeholder="Please input vital history, symptoms, or queries..." required></textarea>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary btn-full modal-submit-btn glow-effect">Confirm Appointment</button>
+      </form>
+
+      <!-- Booking Success Area -->
+      <div id="booking-success-area" class="booking-success-screen" style="display: none;">
+        <div class="success-icon-badge">✨</div>
+        <h4 class="success-title">Appointment Confirmed!</h4>
+        <p class="success-desc">Your consultation details have been secured. A HIPAA encryption key and video conference invite were sent to your registered address.</p>
+        
+        <div class="success-receipt glass-inner-card">
+          <div>👨‍⚕️ <strong>Doctor:</strong> <span id="receipt-doc">Dr. Evelyn Sterling</span></div>
+          <div>🗓️ <strong>Time:</strong> <span id="receipt-time">May 26, 2026 - 10:30 AM</span></div>
+          <div>🔒 <strong>Key:</strong> <code>CF-ENC-928A-1F42</code></div>
+        </div>
+        
+        <button class="btn btn-primary btn-full" id="close-success-btn">Done</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JavaScript Behavior logic -->
+  <script src="app.js"></script>
+</body>
+</html>

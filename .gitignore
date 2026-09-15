@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Build output
+dist/
+build/
+backend/target/
+
+# Logs
+logs/
+*.log
+backend/logs/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
