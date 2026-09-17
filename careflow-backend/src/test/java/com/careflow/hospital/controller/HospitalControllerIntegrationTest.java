@@ -39,7 +39,7 @@ class HospitalControllerIntegrationTest {
                 .emergencyAvailable(true)
                 .build();
 
-        when(hospitalService.getAllHospitals()).thenReturn(List.of(mockHospital));
+        when(hospitalService.getAllHospitals(null, null)).thenReturn(List.of(mockHospital));
 
         mockMvc.perform(get("/hospitals")
                         .contentType(MediaType.APPLICATION_JSON))

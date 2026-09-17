@@ -10,17 +10,12 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface AppointmentMapper {
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "patient", ignore = true)
     @Mapping(target = "doctor", ignore = true)
     @Mapping(target = "hospital", ignore = true)
     @Mapping(target = "status", constant = "PENDING")
     @Mapping(target = "consultationFee", ignore = true)
     @Mapping(target = "qrCode", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     Appointment toEntity(AppointmentRequest request);
 
     @Mapping(target = "patientId", source = "patient.id")
@@ -32,16 +27,11 @@ public interface AppointmentMapper {
     @Mapping(target = "hospitalName", source = "hospital.name")
     AppointmentResponse toResponse(Appointment appointment);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "patient", ignore = true)
     @Mapping(target = "doctor", ignore = true)
     @Mapping(target = "hospital", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "consultationFee", ignore = true)
     @Mapping(target = "qrCode", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     void updateAppointmentFromDto(AppointmentRequest request, @MappingTarget Appointment appointment);
 }

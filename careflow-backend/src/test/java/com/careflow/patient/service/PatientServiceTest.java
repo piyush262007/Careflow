@@ -48,8 +48,8 @@ class PatientServiceTest {
                 .user(patientUser)
                 .bloodGroup("O+")
                 .dateOfBirth(LocalDate.now().minusYears(30))
-                .height(170.0)
-                .weight(70.0)
+                .heightCm(java.math.BigDecimal.valueOf(170.0))
+                .weightKg(java.math.BigDecimal.valueOf(70.0))
                 .emergencyContactName("John Emergency")
                 .emergencyContactPhone("+1 555-9999")
                 .build();

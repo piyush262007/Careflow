@@ -22,13 +22,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import lombok.experimental.SuperBuilder;
+
 @Entity
 @Table(name = "appointments")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Appointment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

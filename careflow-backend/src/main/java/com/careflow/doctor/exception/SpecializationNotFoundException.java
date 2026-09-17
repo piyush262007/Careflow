@@ -1,15 +1,15 @@
 package com.careflow.doctor.exception;
 
 import com.careflow.common.exception.CustomException;
-import org.springframework.http.HttpStatus;
+import com.careflow.common.exception.ErrorCode;
 
 public class SpecializationNotFoundException extends CustomException {
 
     public SpecializationNotFoundException(Long id) {
-        super("Specialization not found with ID: " + id, HttpStatus.NOT_FOUND);
+        super("Specialization not found with ID: " + id, ErrorCode.RESOURCE_NOT_FOUND);
     }
 
     public SpecializationNotFoundException(String message) {
-        super(message, HttpStatus.NOT_FOUND);
+        super(message, ErrorCode.RESOURCE_NOT_FOUND);
     }
 }

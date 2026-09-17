@@ -1,34 +1,53 @@
-# Dependencies
-node_modules/
-backend/.mvn/wrapper/maven-wrapper.jar
-
-# Environment / secrets
+# Environment files and secrets
 .env
+.env.local
 .env.*
 !.env.example
 backend/.env
 backend/.env.*
 !backend/.env.example
+*.pem
+*.key
 
-# Build output
+# Dependencies
+node_modules/
+.pnpm-store/
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Build outputs
 dist/
+dist-ssr/
 build/
+target/
 backend/target/
+*.jar
+*.war
+*.class
 
 # Logs
-logs/
 *.log
+logs/
 backend/logs/
 
-# IDE
-.vscode/
+# IDE / Editor files
 .idea/
+.vscode/
 *.iml
-
-# OS
+*.iws
+*.ipr
 .DS_Store
 Thumbs.db
 
 # Runtime uploads
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+# Scratch files & temporary test scripts
+*.tmp
+/scratch/
+test_*.js
+test_*.ps1
+
+# Other workspace projects
+deshwal-dairy/
+careflow-auth/

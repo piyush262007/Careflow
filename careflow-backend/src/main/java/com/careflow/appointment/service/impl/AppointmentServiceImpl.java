@@ -12,6 +12,7 @@ import com.careflow.auth.entity.User;
 import com.careflow.auth.repository.UserRepository;
 import com.careflow.common.audit.AuditService;
 import com.careflow.common.exception.BadRequestException;
+import com.careflow.common.exception.ForbiddenException;
 import com.careflow.common.exception.ResourceNotFoundException;
 import com.careflow.doctor.entity.Doctor;
 import com.careflow.doctor.entity.DoctorSchedule;
@@ -138,6 +139,82 @@ public class AppointmentServiceImpl implements AppointmentService {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment", "id", id));
         return appointmentMapper.toResponse(appointment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AppointmentResponse getAppointmentByIdSecure(Long id, String principalEmail) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", "id", id));
+
+        User requestingUser = userRepository.findByEmail(principalEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", principalEmail));
+
+        // Ownership enforcement: Admin can view any, Patient can view only their own, Doctor can view assigned
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(requestingUser.getRole().name());
+        boolean isPatientOwner = appointment.getPatient() != null &&
+                appointment.getPatient().getUser() != null &&
+                appointment.getPatient().getUser().getEmail().equalsIgnoreCase(principalEmail);
+        boolean isDoctorOwner = appointment.getDoctor() != null &&
+                appointment.getDoctor().getUser() != null &&
+                appointment.getDoctor().getUser().getEmail().equalsIgnoreCase(principalEmail);
+
+        if (!isAdmin && !isPatientOwner && !isDoctorOwner) {
+            throw new ForbiddenException("You do not have permission to access this appointment.");
+        }
+
+        return appointmentMapper.toResponse(appointment);
+    }
+
+    @Override
+    @Transactional
+    public AppointmentResponse cancelAppointmentByPatient(Long id, String patientEmail) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", "id", id));
+
+        User requestingUser = userRepository.findByEmail(patientEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", patientEmail));
+
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(requestingUser.getRole().name());
+        boolean isPatientOwner = appointment.getPatient() != null &&
+                appointment.getPatient().getUser() != null &&
+                appointment.getPatient().getUser().getEmail().equalsIgnoreCase(patientEmail);
+
+        if (!isAdmin && !isPatientOwner) {
+            throw new ForbiddenException("You do not have permission to cancel this appointment.");
+        }
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new BadRequestException("Appointment is already cancelled.");
+        }
+
+        if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
+            throw new BadRequestException("Completed appointments cannot be cancelled.");
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        Appointment saved = appointmentRepository.save(appointment);
+
+        // Notify patient
+        notificationService.createNotification(
+                saved.getPatient().getUser(),
+                "Appointment Cancelled",
+                String.format("Your appointment with Dr. %s on %s has been cancelled.", saved.getDoctor().getFullName(), saved.getAppointmentDate()),
+                NotificationType.APPOINTMENT_CANCELLED
+        );
+
+        // Notify doctor if present
+        if (saved.getDoctor() != null && saved.getDoctor().getUser() != null) {
+            notificationService.createNotification(
+                    saved.getDoctor().getUser(),
+                    "Appointment Cancelled by Patient",
+                    String.format("Patient %s cancelled their appointment for %s at %s.", saved.getPatient().getUser().getFullName(), saved.getAppointmentDate(), saved.getAppointmentTime()),
+                    NotificationType.APPOINTMENT_CANCELLED
+            );
+        }
+
+        auditService.logAudit(patientEmail, "APPOINTMENT_CANCELLED_BY_PATIENT", "LOCAL", "Cancelled appointment #" + id);
+        return appointmentMapper.toResponse(saved);
     }
 
     @Override
@@ -290,7 +367,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 appointment.getPatient().getUser(),
                 "New Appointment Time Proposed",
                 String.format("Dr. %s has proposed a new appointment time: %s at %s. Please review and respond in your portal.", appointment.getDoctor().getFullName(), request.getDate(), request.getTime()),
-                NotificationType.APPOINTMENT_REMINDER
+                NotificationType.REMINDER
         );
 
         auditService.logAudit(doctorEmail, "APPOINTMENT_TIME_SUGGESTED", "LOCAL", "Suggested new time for appointment #" + id);
@@ -354,7 +431,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment", "id", id));
 
         if (!appointment.getDoctor().getUser().getEmail().equalsIgnoreCase(doctorEmail)) {
-            throw new BadRequestException("Unauthorized: You are not the doctor assigned to this appointment");
+            throw new ForbiddenException("Unauthorized: You are not the doctor assigned to this appointment.");
         }
 
         appointment.setStatus(AppointmentStatus.COMPLETED);
@@ -368,6 +445,31 @@ public class AppointmentServiceImpl implements AppointmentService {
         );
 
         auditService.logAudit(doctorEmail, "APPOINTMENT_COMPLETED", "LOCAL", "Completed appointment #" + id);
+        return appointmentMapper.toResponse(updated);
+    }
+
+    @Override
+    @Transactional
+    public AppointmentResponse startConsultationByDoctor(Long id, String doctorEmail) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", "id", id));
+
+        if (appointment.getDoctor() == null || appointment.getDoctor().getUser() == null ||
+                !appointment.getDoctor().getUser().getEmail().equalsIgnoreCase(doctorEmail)) {
+            throw new ForbiddenException("Unauthorized: You are not the doctor assigned to this appointment.");
+        }
+
+        appointment.setStatus(AppointmentStatus.IN_CONSULTATION);
+        Appointment updated = appointmentRepository.save(appointment);
+
+        notificationService.createNotification(
+                appointment.getPatient().getUser(),
+                "Consultation Started 🩺",
+                String.format("Dr. %s has started your consultation.", appointment.getDoctor().getFullName()),
+                NotificationType.GENERAL
+        );
+
+        auditService.logAudit(doctorEmail, "CONSULTATION_STARTED", "LOCAL", "Started consultation for appointment #" + id);
         return appointmentMapper.toResponse(updated);
     }
 

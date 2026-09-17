@@ -4,8 +4,8 @@ import { X, Calendar, CheckCircle2, QrCode } from 'lucide-react';
 import { AppointmentSummaryStep } from './AppointmentSummaryStep';
 import { DateTimeSelectionStep } from './DateTimeSelectionStep';
 import { ReviewAppointmentStep } from './ReviewAppointmentStep';
-import { DoctorApprovalStep } from './DoctorApprovalStep';
 import { useAppointments } from '../../context/AppointmentContext';
+import { useNavigate } from 'react-router-dom';
 
 interface AppointmentBookingFlowProps {
   onClose: () => void;
@@ -16,67 +16,79 @@ export const AppointmentBookingFlow: React.FC<AppointmentBookingFlowProps> = ({
   onClose,
   onFinishBooking,
 }) => {
-  const { addAppointmentApi, addAppointment } = useAppointments();
+  const navigate = useNavigate();
+  const { addAppointmentApi } = useAppointments();
 
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
-  const [selectedDate, setSelectedDate] = useState('2026-08-10');
-  const [selectedTime, setSelectedTime] = useState('10:00:00');
-  const [createdApptToken, setCreatedApptToken] = useState('A-042');
+  const getTodayISO = () => new Date().toISOString().split('T')[0];
+
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+  const [selectedDate, setSelectedDate] = useState<string>(getTodayISO());
+  const [selectedTime, setSelectedTime] = useState<string>('09:00:00');
+  const [confirmedAppt, setConfirmedAppt] = useState<{
+    id: string;
+    doctorName: string;
+    hospitalName: string;
+    date: string;
+    time: string;
+    token: string;
+  } | null>(null);
+
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [conflictError, setConflictError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleDateTimeSelect = (date: string, time: string) => {
     setSelectedDate(date);
     setSelectedTime(time);
+    setConflictError(null);
     setCurrentStep(3);
   };
 
   const handleConfirmReview = async () => {
     setBookingError(null);
+    setConflictError(null);
+    setIsSubmitting(true);
+
+    const formattedTime = selectedTime.includes(':')
+      ? selectedTime.length === 5
+        ? `${selectedTime}:00`
+        : selectedTime
+      : '09:00:00';
+
     try {
       const newAppt = await addAppointmentApi({
         doctorId: 1,
         hospitalId: 1,
-        appointmentDate: selectedDate.includes('-') ? selectedDate : '2026-08-10',
-        appointmentTime: selectedTime.includes(':') ? (selectedTime.length === 5 ? `${selectedTime}:00` : selectedTime) : '10:00:00',
-        symptoms: 'Cardiology Specialist Consultation Requested',
+        appointmentDate: selectedDate,
+        appointmentTime: formattedTime,
+        symptoms: 'Cardiology Consultation Request',
       });
 
-      setCreatedApptToken(newAppt.qrPassToken);
+      setConfirmedAppt({
+        id: newAppt.id,
+        doctorName: newAppt.doctorName,
+        hospitalName: newAppt.hospitalName,
+        date: newAppt.date,
+        time: newAppt.time,
+        token: newAppt.qrPassToken,
+      });
+
       setCurrentStep(4);
     } catch (err: any) {
-      console.warn('Real backend booking warning:', err);
-      const fallbackAppt = addAppointment({
-        hospitalName: 'St. Jude Central Medical Center',
-        doctorName: 'Dr. Sarah Chen',
-        specialty: 'Senior Cardiologist',
-        date: selectedDate,
-        time: selectedTime,
-        consultationFee: '₹1,500',
-        status: 'Confirmed',
-        qrPassToken: 'A-042',
-      });
-      setCreatedApptToken(fallbackAppt.qrPassToken);
-      setCurrentStep(4);
+      console.error('Booking submission error:', err);
+      const isConflict =
+        err.response?.status === 409 ||
+        (err.message && err.message.toLowerCase().includes('no longer available'));
+
+      if (isConflict) {
+        setConflictError('This appointment slot was just taken. Please choose another time.');
+        setCurrentStep(2); // Redirect back to slot selection to refresh slots
+      } else {
+        setBookingError(err.message || 'Failed to complete booking. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const handleDoctorAccepted = () => {
-    setCurrentStep(5);
-  };
-
-  const handleRescheduledTime = (newTime: string) => {
-    setSelectedTime(newTime);
-    addAppointment({
-      hospitalName: 'St. Jude Central Medical Center',
-      doctorName: 'Dr. Sarah Chen',
-      specialty: 'Senior Cardiologist',
-      date: selectedDate,
-      time: newTime,
-      consultationFee: '₹1,500',
-      status: 'Confirmed',
-      qrPassToken: 'A-043',
-    });
-    setCurrentStep(5);
   };
 
   return (
@@ -95,10 +107,10 @@ export const AppointmentBookingFlow: React.FC<AppointmentBookingFlowProps> = ({
             </div>
             <div>
               <h1 className="font-heading font-extrabold text-base tracking-tight text-[var(--text-primary)]">
-                Appointment Booking Wizard
+                CareFlow Appointment Booking
               </h1>
               <span className="text-[11px] text-[var(--text-muted)] font-medium">
-                Step {currentStep} of {currentStep === 5 ? '5 (Pass Ready)' : '5'}
+                Step {currentStep} of 4: {currentStep === 4 ? 'Appointment Confirmed' : 'Booking Setup'}
               </span>
             </div>
           </div>
@@ -113,7 +125,7 @@ export const AppointmentBookingFlow: React.FC<AppointmentBookingFlowProps> = ({
         </div>
 
         {bookingError && (
-          <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs">
+          <div className="p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-bold">
             {bookingError}
           </div>
         )}
@@ -125,8 +137,10 @@ export const AppointmentBookingFlow: React.FC<AppointmentBookingFlowProps> = ({
 
         {currentStep === 2 && (
           <DateTimeSelectionStep
+            doctorId={1}
             onNext={handleDateTimeSelect}
             onBack={() => setCurrentStep(1)}
+            conflictErrorMessage={conflictError}
           />
         )}
 
@@ -136,19 +150,12 @@ export const AppointmentBookingFlow: React.FC<AppointmentBookingFlowProps> = ({
             selectedTime={selectedTime}
             onConfirm={handleConfirmReview}
             onBack={() => setCurrentStep(2)}
+            isSubmitting={isSubmitting}
           />
         )}
 
-        {currentStep === 4 && (
-          <DoctorApprovalStep
-            selectedDate={selectedDate}
-            selectedTime={selectedTime}
-            onAccepted={handleDoctorAccepted}
-            onRescheduled={handleRescheduledTime}
-          />
-        )}
-
-        {currentStep === 5 && (
+        {/* Appointment Confirmed Success Step */}
+        {currentStep === 4 && confirmedAppt && (
           <div className="py-6 text-center space-y-5">
             <div className="h-16 w-16 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
               <CheckCircle2 className="h-8 w-8" />
@@ -156,27 +163,66 @@ export const AppointmentBookingFlow: React.FC<AppointmentBookingFlowProps> = ({
 
             <div className="space-y-1">
               <span className="text-xs font-mono font-extrabold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                Pass Token #{createdApptToken}
+                Pass Token #{confirmedAppt.token}
               </span>
               <h2 className="font-heading font-extrabold text-xl text-[var(--text-primary)] pt-2">
-                Appointment Confirmed & Live
+                Appointment Confirmed
               </h2>
               <p className="text-xs text-[var(--text-secondary)] max-w-md mx-auto">
-                Your consultation is booked at St. Jude Central Medical Center. Your Digital Priority Pass has been saved to your account.
+                Your consultation request has been successfully recorded on the CareFlow backend.
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={onFinishBooking}
-              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white font-extrabold text-xs shadow-md shadow-emerald-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <QrCode className="h-4 w-4" />
-              <span>View Appointments Directory</span>
-            </button>
+            <div className="p-4 rounded-2xl bg-[var(--bg-card-bg)] border border-[var(--border-color)] text-xs space-y-2 text-left max-w-md mx-auto">
+              <div className="flex justify-between">
+                <span className="text-[var(--text-muted)]">Appointment ID</span>
+                <span className="font-mono font-bold text-[var(--text-primary)]">{confirmedAppt.id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--text-muted)]">Doctor</span>
+                <span className="font-bold text-[var(--text-primary)]">{confirmedAppt.doctorName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--text-muted)]">Hospital</span>
+                <span className="font-bold text-[var(--text-primary)]">{confirmedAppt.hospitalName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--text-muted)]">Date & Time</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                  {confirmedAppt.date} at {confirmedAppt.time}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  onFinishBooking();
+                  navigate('/appointments');
+                }}
+                className="flex-1 py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md shadow-emerald-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <QrCode className="h-4 w-4" />
+                <span>View Appointment</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  onFinishBooking();
+                  navigate('/patient/dashboard');
+                }}
+                className="flex-1 py-3 px-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] font-bold text-xs hover:border-emerald-500/40 transition-all cursor-pointer"
+              >
+                Back to Dashboard
+              </button>
+            </div>
           </div>
         )}
       </motion.div>
     </div>
   );
 };
+
+export default AppointmentBookingFlow;

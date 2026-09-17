@@ -17,8 +17,18 @@ export const notificationService = {
     return res.data;
   },
 
+  async getUnreadCount() {
+    const res = await apiClient.get<ApiResponse<number>>('/notifications/unread-count');
+    return res.data;
+  },
+
   async markAsRead(id: number) {
     const res = await apiClient.put<ApiResponse<NotificationData>>(`/notifications/${id}/read`);
+    return res.data;
+  },
+
+  async markAllAsRead() {
+    const res = await apiClient.put<ApiResponse<string>>('/notifications/read-all');
     return res.data;
   },
 

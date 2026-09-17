@@ -14,7 +14,7 @@ export interface AppointmentData {
   appointmentTime: string;
   symptoms?: string;
   notes?: string;
-  status: 'PENDING' | 'CONFIRMED' | 'REJECTED' | 'TIME_CHANGE_REQUESTED' | 'COMPLETED' | 'CANCELLED';
+  status: 'PENDING' | 'CONFIRMED' | 'IN_CONSULTATION' | 'REJECTED' | 'TIME_CHANGE_REQUESTED' | 'COMPLETED' | 'CANCELLED';
   consultationFee: number;
   qrCode: string;
   createdAt?: string;
@@ -83,10 +83,20 @@ export const appointmentService = {
     return res.data;
   },
 
+  async startConsultation(id: number) {
+    const res = await apiClient.patch<ApiResponse<AppointmentData>>(`/appointments/${id}/start-consultation`);
+    return res.data;
+  },
+
   async updateAppointmentStatus(id: number, status: string) {
     const res = await apiClient.put<ApiResponse<AppointmentData>>(`/appointments/${id}/status`, null, {
       params: { status },
     });
+    return res.data;
+  },
+
+  async cancelAppointment(id: number) {
+    const res = await apiClient.patch<ApiResponse<AppointmentData>>(`/appointments/${id}/cancel`);
     return res.data;
   },
 

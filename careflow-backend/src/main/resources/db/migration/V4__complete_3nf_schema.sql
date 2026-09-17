@@ -1,11 +1,12 @@
 -- CareFlow V4 Complete 3NF Normalized Database Migration
 
 -- 1. Soft Delete & Audit Fields Alignment
-ALTER TABLE users ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE AFTER enabled;
-ALTER TABLE patients ADD COLUMN bmi DOUBLE AFTER weight, ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE AFTER profile_image;
-ALTER TABLE hospitals ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE AFTER image_url;
-ALTER TABLE doctors ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE AFTER status;
-ALTER TABLE appointments ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE AFTER qr_code;
+ALTER TABLE users ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE patients ADD COLUMN bmi DOUBLE;
+ALTER TABLE patients ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE hospitals ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE doctors ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE appointments ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- 2. AI Symptom Triage Consultations Table
 CREATE TABLE IF NOT EXISTS ai_consultations (
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS ai_consultations (
     duration VARCHAR(50),
     predicted_department VARCHAR(100) NOT NULL,
     severity VARCHAR(30) NOT NULL,
-    confidence_score DOUBLE NOT NULL,
+    confidence_score INT NOT NULL,
     recommendation_reason TEXT,
     recommended_hospital_id BIGINT,
     recommended_doctor_id BIGINT,
@@ -52,10 +53,14 @@ CREATE TABLE IF NOT EXISTS health_records (
     patient_id BIGINT NOT NULL,
     doctor_id BIGINT,
     appointment_id BIGINT,
-    record_type VARCHAR(50) NOT NULL,
-    title VARCHAR(150) NOT NULL,
+    record_type VARCHAR(50),
+    title VARCHAR(200) NOT NULL,
     description TEXT,
-    file_url VARCHAR(500) NOT NULL,
+    file_name VARCHAR(255),
+    file_url VARCHAR(500),
+    file_type VARCHAR(100),
+    file_size BIGINT,
+    uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     created_by VARCHAR(100),

@@ -13,6 +13,10 @@ public interface AppointmentService {
 
     AppointmentResponse getAppointmentById(Long id);
 
+    AppointmentResponse getAppointmentByIdSecure(Long id, String principalEmail);
+
+    AppointmentResponse cancelAppointmentByPatient(Long id, String principalEmail);
+
     List<AppointmentResponse> getAllAppointments();
 
     List<AppointmentResponse> getAppointmentsForPatient(String patientEmail);
@@ -36,6 +40,8 @@ public interface AppointmentService {
     AppointmentResponse rejectSuggestedTimeByPatient(Long id, String patientEmail);
 
     AppointmentResponse completeAppointmentByDoctor(Long id, String doctorEmail);
+
+    AppointmentResponse startConsultationByDoctor(Long id, String doctorEmail);
 
     void deleteAppointment(Long id);
 }

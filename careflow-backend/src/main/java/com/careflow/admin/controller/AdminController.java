@@ -6,14 +6,13 @@ import com.careflow.common.audit.AuditService;
 import com.careflow.common.response.ApiResponse;
 import com.careflow.doctor.dto.DoctorRequest;
 import com.careflow.doctor.dto.DoctorResponse;
-import com.careflow.doctor.dto.SpecializationRequest;
-import com.careflow.doctor.dto.SpecializationResponse;
+import com.careflow.doctor.dto.SpecializationDto;
 import com.careflow.doctor.service.DoctorService;
 import com.careflow.hospital.dto.HospitalRequest;
 import com.careflow.hospital.dto.HospitalResponse;
 import com.careflow.hospital.entity.HospitalLiveStatus;
 import com.careflow.hospital.repository.HospitalLiveStatusRepository;
-
+import com.careflow.hospital.repository.HospitalRepository;
 import com.careflow.hospital.service.HospitalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -47,6 +46,7 @@ public class AdminController {
     private final AdminService adminService;
     private final HospitalService hospitalService;
     private final DoctorService doctorService;
+    private final HospitalRepository hospitalRepository;
     private final HospitalLiveStatusRepository liveStatusRepository;
     private final AuditService auditService;
 
@@ -104,7 +104,7 @@ public class AdminController {
                 .build();
 
         HospitalResponse updated = hospitalService.updateHospital(id, req);
-        String action = existing.getIsActive() ? "HOSPITAL_DEACTIVATED" : "HOSPITAL_REACTIVATED";
+        String action = Boolean.TRUE.equals(existing.getEmergencyAvailable()) ? "HOSPITAL_TOGGLE_OFF" : "HOSPITAL_TOGGLE_ON";
         auditService.logAudit(principal.getName(), action, "LOCAL", "Toggled active status for hospital #" + id);
         return ResponseEntity.ok(ApiResponse.success(updated, "Hospital active status updated"));
     }
@@ -118,9 +118,12 @@ public class AdminController {
             @RequestParam(required = false, defaultValue = "AVAILABLE") String emergencyStatus,
             Principal principal
     ) {
+        com.careflow.hospital.entity.Hospital hospital = hospitalRepository.findById(id)
+                .orElseThrow(() -> new com.careflow.common.exception.ResourceNotFoundException("Hospital", "id", id));
+
         HospitalLiveStatus liveStatus = liveStatusRepository.findByHospitalId(id)
                 .orElseGet(() -> HospitalLiveStatus.builder()
-                        .hospital(com.careflow.hospital.entity.Hospital.builder().id(id).build())
+                        .hospital(hospital)
                         .build());
 
         liveStatus.setCurrentQueue(currentQueue);
@@ -187,11 +190,11 @@ public class AdminController {
 
     @PostMapping("/specializations")
     @Operation(summary = "Create medical specialization", description = "Adds a new clinical specialization category.")
-    public ResponseEntity<ApiResponse<SpecializationResponse>> createSpecialization(
+    public ResponseEntity<ApiResponse<SpecializationDto>> createSpecialization(
             Principal principal,
-            @Valid @RequestBody SpecializationRequest request
+            @Valid @RequestBody SpecializationDto request
     ) {
-        SpecializationResponse response = doctorService.createSpecialization(request);
+        SpecializationDto response = doctorService.createSpecialization(request);
         auditService.logAudit(principal.getName(), "SPECIALIZATION_CREATED", "LOCAL", "Created specialization: " + request.getName());
         return new ResponseEntity<>(ApiResponse.success(response, "Specialization created successfully"), HttpStatus.CREATED);
     }

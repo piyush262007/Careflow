@@ -1,10 +1,10 @@
 package com.careflow.auth.service.impl;
 
-import com.careflow.auth.dto.LoginRequest;
-import com.careflow.auth.dto.LoginResponse;
-import com.careflow.auth.dto.RefreshTokenRequest;
-import com.careflow.auth.dto.RegisterRequest;
-import com.careflow.auth.dto.UserResponse;
+import com.careflow.auth.dto.request.LoginRequest;
+import com.careflow.auth.dto.response.LoginResponse;
+import com.careflow.auth.dto.request.RefreshTokenRequest;
+import com.careflow.auth.dto.request.RegisterRequest;
+import com.careflow.auth.dto.response.UserResponse;
 import com.careflow.auth.entity.RefreshToken;
 import com.careflow.auth.entity.Role;
 import com.careflow.auth.entity.User;
@@ -45,11 +45,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     @AuditAction(action = "USER_REGISTER", details = "User registered a new account")
     public UserResponse register(RegisterRequest request) {
+        if (request.getRole() == Role.ADMIN) {
+            throw new BadRequestException("Public registration as ADMIN is not permitted");
+        }
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email address is already registered: " + request.getEmail());
         }
 
-        User user = authMapper.toEntity(request);
+        User user = authMapper.toUserEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(true);
 
@@ -76,11 +80,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         RefreshToken refreshToken = createRefreshToken(user);
 
         return LoginResponse.builder()
-                .accessToken(accessToken)
+                .token(accessToken)
                 .refreshToken(refreshToken.getToken())
                 .tokenType("Bearer")
-                .expiresIn(jwtService.getExpiration())
-                .user(authMapper.toUserResponse(user))
+                .userId(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .expiresIn(jwtService.getJwtExpiration())
                 .build();
     }
 
@@ -88,22 +95,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public LoginResponse refreshToken(RefreshTokenRequest request) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken())
-                .orElseThrow(() -> new CustomException("Invalid Refresh Token", ErrorCode.UNAUTHORIZED));
+                .orElseThrow(() -> new CustomException("Invalid Refresh Token", ErrorCode.INVALID_CREDENTIALS));
 
         if (refreshToken.isRevoked() || refreshToken.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenRepository.delete(refreshToken);
-            throw new CustomException("Refresh Token expired or revoked. Please login again.", ErrorCode.UNAUTHORIZED);
+            throw new CustomException("Refresh Token expired or revoked. Please login again.", ErrorCode.INVALID_CREDENTIALS);
         }
 
         User user = refreshToken.getUser();
         String newAccessToken = jwtService.generateToken(user);
 
         return LoginResponse.builder()
-                .accessToken(newAccessToken)
+                .token(newAccessToken)
                 .refreshToken(refreshToken.getToken())
                 .tokenType("Bearer")
-                .expiresIn(jwtService.getExpiration())
-                .user(authMapper.toUserResponse(user))
+                .userId(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .expiresIn(jwtService.getJwtExpiration())
                 .build();
     }
 
@@ -125,8 +135,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return authMapper.toUserResponse(user);
     }
 
+    @Override
+    public void resetPassword(String email) {
+        // Password reset placeholder implementation
+    }
+
+    @Override
+    public void verifyEmail(String token) {
+        // Email verification placeholder implementation
+    }
+
     private RefreshToken createRefreshToken(User user) {
-        refreshTokenRepository.deleteByUserId(user.getId());
+        refreshTokenRepository.deleteByUser(user);
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)

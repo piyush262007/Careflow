@@ -1,475 +1,376 @@
-# CareFlow — AI Healthcare Navigation System
+# CareFlow — AI-Powered Smart Healthcare Management Platform
 
-CareFlow is an AI-powered healthcare navigation platform designed to help patients find the right medical care faster by connecting symptoms, specialties, hospitals, doctors, availability, appointments, and healthcare navigation into one intelligent workflow.
+CareFlow is an intelligent full-stack healthcare platform designed to streamline hospital discovery, appointment management, live queue tracking, doctor consultations, digital prescriptions, and electronic health records into a single unified workflow.
 
 ---
 
 ## 1. Overview
 
-CareFlow addresses a critical challenge in modern healthcare: helping patients navigate from initial symptoms to the right specialist and medical facility without confusion or delay. By combining intelligent symptom triage with location-aware hospital discovery and real-time appointment scheduling, CareFlow bridges the gap between patient needs and clinical care.
+CareFlow bridges the gap between patient symptoms and specialized clinical care. By integrating symptom-aware specialty recommendation with location-based hospital discovery and atomic appointment booking, CareFlow provides end-to-end healthcare navigation for patients while equipping doctors and hospital administrators with real-time operational management tools.
 
-The platform guides users through an intuitive, end-to-end care navigation pipeline:
+$$\text{Symptoms} \longrightarrow \text{Specialty Match} \longrightarrow \text{Hospital Discovery} \longrightarrow \text{Doctor Selection} \longrightarrow \text{Slot Booking} \longrightarrow \text{Consultation} \longrightarrow \text{Digital Prescription}$$
 
-$$\text{Symptoms} \longrightarrow \text{AI Analysis} \longrightarrow \text{Specialty} \longrightarrow \text{Hospital Recommendation} \longrightarrow \text{Doctor} \longrightarrow \text{Time Slot} \longrightarrow \text{Appointment} \longrightarrow \text{QR Pass} \longrightarrow \text{Navigation} \longrightarrow \text{Live Care Journey}$$
-
-> [!IMPORTANT]  
-> **Medical Disclaimer:** CareFlow is designed exclusively to assist with healthcare navigation, facility discovery, and administrative appointment management. CareFlow does **NOT** provide medical diagnosis, clinical treatment advice, or emergency triage. Users experiencing medical emergencies should contact local emergency services immediately.
+> [!IMPORTANT]
+> **Medical Disclaimer:** CareFlow is an administrative healthcare navigation and appointment coordination platform. CareFlow does **NOT** provide medical diagnosis or emergency triage. Users experiencing medical emergencies should contact local emergency services immediately.
 
 ---
 
-## 2. Core Features
+## 2. Problem
 
-CareFlow is built around production-tested features implemented across the frontend and backend applications:
-
-- **AI-Assisted Symptom Navigation & Specialty Triage:** Analyzes patient symptom inputs, duration, and severity to recommend appropriate clinical specialties (e.g., Cardiology, Neurology, Orthopedics, Gastroenterology).
-- **Specialty & Distance-Aware Hospital Recommendation:** Ranks healthcare facilities dynamically using Haversine physical distance calculations (in km), department availability, patient ratings, and live queue status.
-- **Doctor Availability & Schedule Management:** Real-time visibility into doctor weekly schedules, slot capacities, and consultation modes (Offline / Virtual).
-- **Double-Booking Protection:** Strict database unique constraint (`uk_doctor_appointment_slot`) and service-layer validation preventing overlapping appointments (returns HTTP 409 Conflict).
-- **Doctor Approval Workflow:** Complete appointment lifecycle management with statuses (`PENDING`, `CONFIRMED`, `REJECTED`, `CANCELLED`, `COMPLETED`).
-- **Digital QR Appointment Pass:** Instant generation of secure ZXing-encoded QR passes upon appointment confirmation for seamless hospital check-in.
-- **Today Care & Live Navigation:** Dedicated real-time dashboard providing step-by-step turn-by-turn guidance and queue monitoring on appointment days.
-- **Patient Dashboard & Medical History:** Centralized portal for tracking active/past appointments, uploaded health records, and personal health profiles.
-- **Doctor & Admin Dashboards:** Dedicated management portals for doctors to handle schedules and appointments, and hospital managers to manage ER status, queue wait times, and bed availability.
-- **Google Maps Integration:** Interactive map displays, location markers, and direct navigation links for nearby healthcare facilities.
-- **Stateless JWT Authentication & Security:** Secure token-based authentication with short-lived access tokens, hashed refresh tokens, BCrypt password hashing, and fine-grained Role-Based Access Control (RBAC).
-- **Automated Schema Migrations:** Versioned database evolution using Flyway migrations (V1 to V6) targeting MySQL 8.
-- **Docker Containerization:** Ready-to-deploy multi-container orchestration using Docker Compose with automated health checks.
+In traditional healthcare access, patients frequently experience:
+- **Specialty Misalignment:** Difficulty determining which medical specialist to consult for specific symptoms.
+- **Opaque Wait Times:** Unpredictable emergency room and clinic waiting queues causing patient overcrowding.
+- **Manual Booking Friction:** Fragmented booking processes leading to schedule overlaps and missing medical histories.
+- **Fragmented Health Records:** Disconnected prescriptions, lab reports, and doctor consultation notes.
 
 ---
 
-## 3. How CareFlow Works
+## 3. Solution
 
-The following flowchart details how a patient moves through the CareFlow ecosystem:
-
-```mermaid
-flowchart LR
-    A[Patient] --> B[Describe Symptoms]
-    B --> C[AI Analysis]
-    C --> D[Determine Specialty]
-    D --> E[Hospital Recommendation]
-    E --> F[Doctor Availability]
-    F --> G[Choose Appointment]
-    G --> H[Doctor Approval]
-    H --> I[QR Appointment Pass]
-    I --> J[Navigation & Today Care]
-```
-
-### Detailed Workflow Stages
-
-1. **Symptom Input:** The patient inputs current symptoms, pain severity, and duration into the navigation interface.
-2. **AI Triage Engine:** The system processes the input and maps the symptoms to a target clinical specialty with a confidence score and recommended severity rating.
-3. **Facility Matching:** Nearby hospitals offering the matched specialty are retrieved and ranked using physical distance (Haversine formula in km), rating, and real-time ER queue metrics.
-4. **Doctor Selection:** The patient views qualified doctors in the chosen hospital and checks their live weekly schedule availability.
-5. **Slot Reservation:** Selecting an open time slot places an appointment request in `PENDING` status. Concurrent duplicate bookings on the same slot are rejected at the database level.
-6. **Provider Review:** The doctor or clinic administrator reviews the booking request in their dashboard and approves (`CONFIRMED`) or declines it.
-7. **QR Pass Issuance:** Upon approval, a cryptographic QR pass is generated for the appointment.
-8. **Day-of-Care Navigation:** On the appointment date, the patient activates "Today Care" for directions, check-in instructions, and live status updates.
+CareFlow addresses these challenges through a modern full-stack web application:
+- **Intelligent Specialty Triage:** Recommends appropriate medical departments based on symptom descriptions, severity, and duration.
+- **Distance & Queue-Aware Hospital Discovery:** Ranks nearby hospitals using physical distance calculations (Haversine formula in km), real-time queue length, and department availability.
+- **Atomic Concurrency Protection:** Prevents double booking at the database level using SQL unique constraints and service-layer validation (`HTTP 409 Conflict`).
+- **Complete Consultation & EHR Suite:** Enables doctors to record diagnosis notes, issue structured digital prescriptions, and instantly sync health records to patient portals.
 
 ---
 
-## 4. User Roles
+## 4. Key Features
 
-CareFlow implements strict Role-Based Access Control (RBAC) across three primary user types:
+- **Symptom Triage & Recommendation Engine:** Smart mapping of patient symptoms to medical specialties (e.g., Cardiology, Neurology, Orthopedics).
+- **Interactive Hospital Discovery & Google Maps:** Live location markers, geodesic distance calculation (km), emergency status toggles, and dynamic map fallback mode.
+- **Doctor Availability & Booking Flow:** Real-time weekly schedule visibility, slot selection, and booking state transitions (`PENDING`, `CONFIRMED`, `REJECTED`, `COMPLETED`, `CANCELLED`).
+- **Digital QR Appointment Passes:** Instant 300x300 PNG QR pass generation (ZXing core engine) for hospital reception check-in.
+- **Live Queue Tracking:** Real-time queue position display and estimated wait time calculations for patients.
+- **Doctor Consultation Portal:** Patient medical history summary, complaint notes, diagnosis entry, medication builder, and digital signature simulation.
+- **Structured Digital Prescriptions:** Clear medical document format showing Doctor details, Patient information, Medication name, Dosage, Frequency, Duration, and Special Instructions.
+- **Electronic Health Records (EHR):** Digital repository for consultation histories, lab reports, attached documents, and downloadable summary cards.
+- **In-App Notification Center:** Real-time notification updates with unread badges and single-click read markers.
+- **Healthcare Operations Admin Dashboard:** Comprehensive admin suite for managing hospital profiles, doctor rosters, patient registries, queue status, and system logs.
 
-| User Role | Dashboard | Key Capabilities & Access Rights |
+---
+
+## 5. User Roles
+
+CareFlow enforces strict Role-Based Access Control (RBAC) across three distinct user roles:
+
+| User Role | Dashboard Portal | Core Capabilities & Permissions |
 | :--- | :--- | :--- |
-| **Patient** (`ROLE_PATIENT`) | Patient Portal | Perform AI symptom triage, discover hospitals, book appointments, access QR passes, manage health records, and view Today Care status. |
-| **Doctor** (`ROLE_DOCTOR`) | Doctor Portal | Manage weekly schedule slots, view assigned patient appointments, confirm/reject bookings, mark appointments as completed, and review patient symptom notes. |
-| **Hospital / Admin** (`ROLE_HOSPITAL`, `ROLE_ADMIN`) | Hospital Admin | Manage hospital department profiles, update live queue wait times, toggle bed/ICU availability, manage hospital doctors, and inspect audit logs. |
+| **Patient** (`ROLE_PATIENT`) | Patient Dashboard | Perform symptom triage, discover hospitals, book appointments, track live queue, view digital prescriptions, upload/view health records, receive notifications. |
+| **Doctor** (`ROLE_DOCTOR`) | Doctor Dashboard | Manage weekly operating schedules, view assigned patients, confirm/reject bookings, conduct consultations, issue digital prescriptions, mark visits as completed. |
+| **Admin** (`ROLE_ADMIN`) | Admin Dashboard | Oversee healthcare operations, manage hospital profiles, maintain doctor/patient rosters, monitor live queue status, inspect system logs and reports. |
 
 ---
 
-## 5. Technology Stack
-
-CareFlow is engineered using modern, industry-standard technologies split across a decoupled client-server architecture:
+## 6. Technology Stack
 
 ### Frontend (`careflow-hero`)
-- **Framework:** React 18 with TypeScript
+- **Core:** React 18 with TypeScript
 - **Build Tool:** Vite
-- **Styling:** Tailwind CSS with Vanilla CSS design tokens
+- **Styling:** Tailwind CSS with custom CSS design tokens
 - **Icons:** Lucide React
-- **Mapping:** Google Maps JavaScript API
+- **Animations:** Framer Motion
+- **Maps:** Google Maps JavaScript API (with responsive card fallback mode)
 - **HTTP Client:** Axios / Fetch API
 
 ### Backend (`careflow-backend`)
-- **Language & Runtime:** Java 21 (JDK 21)
+- **Runtime:** Java 21 (JDK 21)
 - **Framework:** Spring Boot 3.2.5
-- **Security:** Spring Security with Stateless JWT (JJWT) & BCrypt
-- **Data Access:** Spring Data JPA / Hibernate (`ddl-auto: validate`)
-- **Database:** MySQL 8.0
-- **Migrations:** Flyway Database Migration Engine
-- **QR Code Generation:** ZXing (Zebra Crossing) Core & JavaSE
-- **Health Monitoring:** Spring Boot Actuator
+- **Security:** Spring Security with Stateless JWT (JJWT) & BCrypt password hashing
+- **Data Access:** Spring Data JPA / Hibernate
+- **Database:** MySQL 8.0 (H2 in-memory for testing)
+- **Database Migrations:** Flyway Migration Engine (V1 to V10)
+- **QR Engine:** ZXing (Zebra Crossing) Core & JavaSE
+- **API Documentation:** Springdoc OpenAPI / Swagger UI
 
-### Infrastructure & DevOps
-- **Containerization:** Docker & Docker Compose (Multi-stage Dockerfiles)
-- **Build Systems:** Maven (`mvnw`) & Node.js (`npm`)
+### Infrastructure
+- **Containerization:** Docker & Docker Compose
+- **Build Managers:** Maven (`mvn`) & Node.js (`npm`)
 
 ---
 
-## 6. System Architecture
+## 7. Architecture
 
-CareFlow follows a layered, service-oriented architecture designed for scalability, security, and clean separation of concerns:
+CareFlow follows a decoupled client-server architecture:
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Patient as Patient / Client
-    participant Frontend as React Frontend (Vite)
-    participant API as Spring Boot API Gateway / Security
-    participant AI as AI Triage & Recommendation Engine
-    participant DB as MySQL Database (Flyway)
-    participant Maps as Google Maps API
+```
+[ React + Vite Frontend ] ──(HTTP / REST / JWT)──> [ Spring Boot API Gateway ]
+                                                           │
+                                                           ├──> [ Spring Security + JWT ]
+                                                           ├──> [ Service Layer Business Logic ]
+                                                           ├──> [ Spring Data JPA / Hibernate ]
+                                                           └──> [ MySQL 8.0 Database (Flyway Engine) ]
+```
 
-    Patient->>Frontend: Submit Symptoms & Duration
-    Frontend->>API: POST /api/ai/triage (JWT Auth Header)
-    API->>AI: Analyze Symptoms & Predict Specialty
-    AI-->>API: Return Specialty, Confidence & Severity
-    API->>DB: Query Nearby Hospitals & Doctors
-    DB-->>API: Hospital Data & Geo Coordinates
-    API-->>Frontend: Return Ranked Hospital & Doctor Recommendations
-    Frontend->>Maps: Compute Route & Render Map Markers
-    Patient->>Frontend: Select Doctor & Booking Slot
-    Frontend->>API: POST /api/appointments
-    API->>DB: Atomic Insert (Unique Slot Guard)
-    DB-->>API: Appointment Saved (Status: PENDING)
-    API-->>Frontend: HTTP 201 Created + Appointment Details
+### Containerized Topology
+```
+                  ┌────────────────────────┐
+                  │    Docker Network      │
+                  │                        │
+  Port 5173  ───> │  [ careflow-hero ]     │
+                  │           │            │
+  Port 8080  ───> │  [ careflow-backend ]  │
+                  │           │            │
+  Port 3306  ───> │  [ careflow-db ]       │
+                  └────────────────────────┘
 ```
 
 ---
 
-## 7. Project Structure
-
-The repository is structured as a clean multi-module repository with dedicated frontend and backend projects:
+## 8. Project Structure
 
 ```
 CareFlow/
-├── docker-compose.yml              # Multi-container Docker orchestration
 ├── README.md                       # Project root documentation
+├── .gitignore                      # Git exclusion rules
 ├── careflow-hero/                  # React + TypeScript Frontend
-│   ├── public/                     # Static web assets
 │   ├── src/
-│   │   ├── components/             # Reusable UI components (Navbar, Footer, Maps)
-│   │   ├── context/                # React Contexts (AuthContext)
-│   │   ├── pages/                  # Page Views (Landing, Login, Dashboards, AI Triage)
-│   │   ├── services/               # API service clients (auth, appointment, hospital)
-│   │   ├── types/                  # TypeScript interface definitions
-│   │   ├── App.tsx                 # Main application routes
-│   │   └── main.tsx                # Application entry point
-│   ├── .env.example                # Frontend environment template
-│   ├── package.json                # Node dependencies & scripts
-│   ├── tailwind.config.js          # Tailwind CSS styling configuration
-│   └── vite.config.ts              # Vite compiler configuration
+│   │   ├── components/             # UI Components (Auth, Dashboards, Booking, Prescriptions, Records)
+│   │   ├── context/                # React AuthContext
+│   │   ├── hooks/                  # Custom React Hooks
+│   │   ├── services/               # API Service Clients
+│   │   ├── types/                  # TypeScript Types & Interfaces
+│   │   ├── App.tsx                 # Application Routing & Guards
+│   │   └── main.tsx                # Frontend Entry Point
+│   ├── .env.example                # Frontend Environment Template
+│   ├── package.json                # Dependencies & Build Scripts
+│   ├── tailwind.config.js          # Tailwind Styling Config
+│   └── vite.config.ts              # Vite Compiler Config
 │
-└── careflow-backend/               # Spring Boot Backend
-    ├── Dockerfile                  # Production multi-stage Java Dockerfile
-    ├── pom.xml                     # Maven project configuration & dependencies
-    ├── .env.example                # Backend environment template
+└── careflow-backend/               # Spring Boot REST API Backend
+    ├── Dockerfile                  # Production Multi-Stage Dockerfile
+    ├── docker-compose.yml          # Container Orchestration
+    ├── pom.xml                     # Maven Dependencies Config
+    ├── .env.example                # Backend Environment Template
     └── src/
         ├── main/
         │   ├── java/com/careflow/
-        │   │   ├── admin/          # Admin & hospital management endpoints
-        │   │   ├── appointment/    # Booking & appointment state logic
-        │   │   ├── auth/           # Authentication, JWT, and user management
-        │   │   ├── common/         # Global exception handlers & base DTOs
-        │   │   ├── config/         # Security, CORS, and JPA configurations
-        │   │   ├── dashboard/      # Role-specific dashboard aggregators
-        │   │   ├── doctor/         # Doctor schedule & availability management
-        │   │   ├── hospital/       # Hospital profiles & live queue metrics
-        │   │   ├── notification/   # In-app notification services
-        │   │   ├── patient/        # Patient profiles & health records
-        │   │   ├── qr/             # ZXing QR Pass generation logic
-        │   │   └── recommendation/ # AI symptom triage & matching logic
+        │   │   ├── admin/          # Admin & Operations Controllers
+        │   │   ├── appointment/    # Booking Engine & Service
+        │   │   ├── auth/           # Authentication & User Service
+        │   │   ├── common/         # Audit & Global Exception Handlers
+        │   │   ├── doctor/         # Doctor Schedules & Roster
+        │   │   ├── hospital/       # Hospital Discovery & Geo Search
+        │   │   ├── notification/   # In-App Notification System
+        │   │   ├── patient/        # Patient Profiles & Health Records
+        │   │   ├── prescription/   # Consultation Notes & Prescriptions
+        │   │   ├── qr/             # ZXing QR Pass Generator
+        │   │   ├── recommendation/ # AI Specialty Triage Engine
+        │   │   └── security/       # JWT Filters & Security Config
         │   └── resources/
-        │       ├── application.yml # Base Spring Boot configuration
-        │       └── db/migration/   # Versioned Flyway SQL scripts (V1__... to V6__...)
-        └── test/                   # JUnit 5 backend integration tests
+        │       ├── application.yml # Core Spring Boot Configuration
+        │       └── db/migration/   # Versioned Flyway SQL Scripts (V1__... to V10__...)
+        └── test/                   # Integration & Unit Tests
 ```
 
 ---
 
-## 8. Authentication & Security
+## 9. Prerequisites
 
-CareFlow enforces enterprise-grade security standards to protect patient data and system access:
-
-1. **Stateless JWT Architecture:**
-   - **Access Tokens:** Short-lived JWTs passed in the HTTP `Authorization: Bearer <token>` header.
-   - **Refresh Tokens:** Cryptographically hashed refresh tokens stored in the database to issue new access tokens securely.
-2. **Role-Based Access Control (RBAC):**
-   - Endpoints are protected with Spring Security method annotations (`@PreAuthorize("hasRole('PATIENT')")`).
-   - Unauthenticated access is restricted strictly to public endpoints (login, registration, public hospital listings).
-3. **IDOR & Resource Guards:**
-   - Patients can only access their own appointments, health records, and profile details.
-   - Doctors can only view and update appointments assigned to their user ID.
-4. **Data Hardening:**
-   - User passwords are encrypted using BCrypt hashing before storage.
-   - Sensitive environment variables (`JWT_SECRET`, database passwords) are loaded dynamically and excluded from version control.
-
----
-
-## 9. AI Healthcare Navigation
-
-CareFlow's AI Healthcare Navigation module converts unstructured patient symptom descriptions into actionable clinical recommendations:
-
-- **Symptom Mapping:** Maps user-reported symptoms to medical specialties (e.g., *"chest pain and shortness of breath"* $\rightarrow$ Cardiology; *"joint pain and swelling"* $\rightarrow$ Orthopedics).
-- **Severity Assessment:** Assigns risk levels based on pain scale, symptom duration, and clinical flags.
-- **Intelligent Hospital Scoring:** Ranks hospitals by calculating a composite score based on:
-  - Specialty department presence
-  - Proximity to patient (Haversine formula in km)
-  - Hospital rating
-  - Current live queue wait time
-  - Bed & ICU availability
-
----
-
-## 10. Appointment Workflow
-
-The appointment engine enforces strict concurrency and state transitions to prevent double-booking and operational bottlenecks:
-
-```
-[Available Slot] ──(Patient Request)──> [PENDING] ──(Doctor Confirm)──> [CONFIRMED] ──(Visit Complete)──> [COMPLETED]
-                                          │                                   │
-                                          ├──(Doctor Reject)──> [REJECTED]    └──(Patient Cancel)──> [CANCELLED]
-```
-
-### Double-Booking Guard Mechanism
-To ensure slot consistency across concurrent requests:
-1. **Database Constraint:** A unique SQL index `uk_doctor_appointment_slot (doctor_id, appointment_date, appointment_time, status)` prevents duplicate active slots at the MySQL engine level.
-2. **HTTP 409 Conflict Response:** If a slot conflict occurs, the API returns a structured HTTP 409 status code with a user-friendly error payload.
-
----
-
-## 11. Google Maps Integration
-
-CareFlow integrates Google Maps JavaScript API for visual healthcare navigation:
-
-- **Interactive Hospital Locator:** Displays nearby hospitals with custom map markers.
-- **Distance Calculation:** Computes true geodesic distances in kilometers between patient geolocation and hospital facilities using the Haversine formula:
-  $$d = 2R \arcsin \left( \sqrt{ \sin^2\left(\frac{\Delta \phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta \lambda}{2}\right) } \right)$$
-- **Navigation Links:** Generates direct Google Maps directions links for one-click turn-by-turn navigation on mobile and desktop devices.
-- **Graceful Fallback:** If map scripts or API keys are unavailable, the UI seamlessly falls back to list views and calculated distances without throwing runtime exceptions.
-
----
-
-## 12. Database
-
-The database is built on **MySQL 8.0** and managed entirely through **Flyway versioned migrations**:
-
-### Database Schema Highlights
-- `users`: Core authentication identity table (email, password_hash, role).
-- `patients`: Patient profiles, physical characteristics (height, weight), emergency contacts.
-- `doctors`: Doctor qualifications, department specialties, consultation modes.
-- `hospitals`: Hospital master records, geo coordinates (`latitude`, `longitude`), overall ratings.
-- `doctor_schedules`: Weekly recurring slot allocations and maximum capacities.
-- `appointments`: Booking entries with slot timestamps, status, and reference codes.
-- `ai_consultations`: History of AI triage queries, predicted departments, and recommendations.
-- `qr_codes`: Cryptographic tokens and paths for appointment QR passes.
-- `hospital_live_status`: Real-time queue length, estimated wait times, and bed capacities.
-- `audit_logs`: Operations tracking log for security compliance.
-
----
-
-## 13. Environment Configuration
-
-CareFlow relies on externalized environment variables for configuration. Sample environment templates (`.env.example`) are provided in both subprojects.
-
-> [!WARNING]  
-> Never commit real secrets, API keys, or production passwords to version control.
-
-### Backend `.env` Variables (`careflow-backend`)
-
-| Variable Name | Description | Example Placeholder |
-| :--- | :--- | :--- |
-| `DATABASE_URL` | JDBC database connection string | `jdbc:mysql://localhost:3306/careflow_db?useSSL=false&allowPublicKeyRetrieval=true` |
-| `DATABASE_USERNAME` | Database connection user | `careflow_user` |
-| `DATABASE_PASSWORD` | Database connection password | `YOUR_SECURE_DB_PASSWORD` |
-| `JWT_SECRET` | 256-bit secret key for signing JWTs | `GENERATE_A_SECURE_SECRET_KEY_MIN_256_BITS_LONG` |
-| `CORS_ALLOWED_ORIGINS` | Permitted cross-origin domains | `http://localhost:5173,https://yourdomain.com` |
-
-### Frontend `.env` Variables (`careflow-hero`)
-
-| Variable Name | Description | Example Placeholder |
-| :--- | :--- | :--- |
-| `VITE_API_BASE_URL` | Base URL of the Spring Boot REST API | `http://localhost:8080/api` |
-| `VITE_GOOGLE_MAPS_API_KEY` | Public Google Maps JavaScript API key | `YOUR_GOOGLE_MAPS_API_KEY` |
-
----
-
-## 14. Local Development
-
-Follow these steps to run CareFlow locally on your development machine.
-
-### Prerequisites
-- **Java Development Kit (JDK):** Version 21 or higher
-- **Node.js:** Version 18.x or higher (with `npm`)
-- **MySQL Database:** Version 8.0 (running on port `3306`)
+Before installing and running CareFlow, ensure your environment meets the following requirements:
+- **Java Development Kit (JDK):** Version 21
+- **Node.js:** Version 18.x or 20.x (with `npm`)
+- **MySQL Server:** Version 8.0 (running on port `3306`)
+- **Docker & Docker Compose:** (Optional, for containerized execution)
 - **Git**
 
-### Step 1: Clone the Repository
+---
+
+## 10. Environment Variables
+
+CareFlow utilizes externalized configuration via environment variables.
+
+### Frontend (`careflow-hero/.env.example`)
+```env
+VITE_API_BASE_URL=http://localhost:8080/api/v1
+VITE_GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
+```
+
+### Backend (`careflow-backend/.env.example`)
+```env
+DATABASE_URL=jdbc:mysql://localhost:3306/careflow_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+DATABASE_USERNAME=careflow_user
+DATABASE_PASSWORD=YOUR_PRODUCTION_DATABASE_PASSWORD
+JWT_SECRET=GENERATE_A_SECURE_SECRET_MIN_256_BITS
+GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+```
+
+---
+
+## 11. Local Development
+
+### Step 1: Clone Repository
 ```bash
 git clone https://github.com/your-username/CareFlow.git
 cd CareFlow
 ```
 
-### Step 2: Configure & Start Backend
+### Step 2: Run Backend Service
 ```bash
 cd careflow-backend
-
-# Copy template environment file
+# Optional: copy environment template
 cp .env.example .env
 
-# Edit .env to set your local MySQL credentials and JWT secret
-
-# Run database migrations and start Spring Boot app
-./mvnw spring-boot:run
+# Build and execute Spring Boot application
+mvn spring-boot:run
 ```
-The backend API will start at `http://localhost:8080`.
+The REST API starts at `http://localhost:8080/api/v1`.
 
-### Step 3: Configure & Start Frontend
-Open a new terminal window:
+### Step 3: Run Frontend Application
+Open a separate terminal session:
 ```bash
 cd careflow-hero
-
-# Copy template environment file
-cp .env.example .env
-
-# Install Node dependencies
+# Install NPM dependencies
 npm install
 
-# Start Vite dev server
+# Launch Vite development server
 npm run dev
 ```
-The frontend application will start at `http://localhost:5173`.
+The application will open at `http://localhost:5173`.
 
 ---
 
-## 15. Docker Setup
+## 12. Docker Setup
 
-CareFlow includes full Docker containerization for one-command deployment using Docker Compose.
+To build and run the entire CareFlow stack using Docker:
 
-### Docker Architecture
-- **`careflow-db`**: MySQL 8.0 database container with persistent volume storage and health checks.
-- **`careflow-backend`**: Multi-stage compiled Spring Boot application container depending on DB health.
-
-### Quick Start with Docker Compose
-
-1. **Build and start services:**
+1. **Navigate to the backend directory containing `docker-compose.yml`:**
    ```bash
-   docker compose up --build -d
+   cd careflow-backend
    ```
-
-2. **Verify container health:**
+2. **Validate compose configuration:**
+   ```bash
+   docker compose config
+   ```
+3. **Build and start containerized stack:**
+   ```bash
+   docker compose up -d --build
+   ```
+4. **Verify running status and health checks:**
    ```bash
    docker compose ps
    ```
+   *Expected Containers:* `careflow-db` (healthy), `careflow-backend` (healthy).
 
-3. **View live logs:**
-   ```bash
-   docker compose logs -f
-   ```
-
-4. **Stop services:**
+5. **Stop stack:**
    ```bash
    docker compose down
    ```
 
 ---
 
-## 16. API Documentation
+## 13. Database
 
-CareFlow exposes structured RESTful APIs across core application domains:
+CareFlow uses **MySQL 8.0** with **Flyway** for database migrations:
+- **Migration Scripts:** Located in `careflow-backend/src/main/resources/db/migration/` (`V1__` through `V10__`).
+- **Automatic Migration:** Spring Boot automatically executes pending migrations on application startup.
+- **ORM Mapping:** JPA entities configured with `hibernate.ddl-auto=validate` to enforce 3NF relational integrity.
 
-### Authentication (`/api/auth`)
-- `POST /api/auth/register` — Register a new patient account.
-- `POST /api/auth/login` — Authenticate and receive JWT access token.
-- `POST /api/auth/refresh` — Issue a new access token using a valid refresh token.
-- `POST /api/auth/logout` — Revoke active session tokens.
+---
 
-### AI Navigation & Recommendations (`/api/ai`, `/api/recommendations`)
-- `POST /api/ai/triage` — Submit symptoms for AI specialty prediction and severity analysis.
-- `GET /api/recommendations/hospitals` — Get hospital recommendations filtered by specialty and distance.
+## 14. API Documentation
 
-### Hospitals & Live Metrics (`/api/hospitals`)
-- `GET /api/hospitals` — List all registered active hospitals.
-- `GET /api/hospitals/{id}` — Retrieve hospital details and live queue status.
-- `GET /api/hospitals/nearby` — Get nearby hospitals within a radius.
+CareFlow includes Swagger UI / OpenAPI 3.0 interactive documentation:
+- **Swagger UI Endpoint:** `http://localhost:8080/api/v1/swagger-ui.html`
+- **OpenAPI JSON Spec:** `http://localhost:8080/api/v1/v3/api-docs`
 
-### Appointments (`/api/appointments`)
-- `POST /api/appointments` — Book a new appointment slot (`ROLE_PATIENT`).
-- `GET /api/appointments/patient/{id}` — Fetch appointment history for a patient.
-- `PATCH /api/appointments/{id}/status` — Update appointment status (`ROLE_DOCTOR`).
+### Major API Endpoint Groups
+- `/api/v1/auth/*`: Registration, JWT Login, Refresh Token, User Details
+- `/api/v1/hospitals/*`: Hospital Profiles, Recommendation Engine, Geo Search
+- `/api/v1/doctors/*`: Doctor Directory, Schedules, Operating Hours
+- `/api/v1/appointments/*`: Booking Creation, Confirmations, Cancellations, Status Updates, QR Code PNGs
+- `/api/v1/prescriptions/*`: Doctor Consultation Notes, Digital Prescription Issuance & Retrieval
+- `/api/v1/health-records/*`: Patient EHR Documents, File Uploads, Consultation Summaries
+- `/api/v1/notifications/*`: Unread Notification Count, Mark as Read Controls
+- `/api/v1/admin/*`: System Analytics, Roster Controls, Operations Management
 
-### System Health (`/actuator`)
-- `GET /actuator/health` — Spring Boot Actuator endpoint returning operational status (`UP`/`DOWN`).
+---
+
+## 15. Authentication
+
+CareFlow implements stateless JSON Web Token (JWT) security:
+- **Header Structure:** `Authorization: Bearer <JWT_TOKEN>`
+- **Expiration:** Access tokens expire after 24 hours; refresh tokens expire after 7 days.
+- **Password Security:** All user credentials are encrypted using BCrypt hash function before persistence.
+- **Session Persistence:** Tokens are securely stored in client `localStorage` with automatic header injection via Axios interceptors.
+
+---
+
+## 16. Google Maps Setup
+
+CareFlow uses the Google Maps JavaScript API for hospital geographic visualizer:
+1. Obtain an API key from the **Google Cloud Console** with Maps JavaScript API enabled.
+2. For production deployments, configure **HTTP Referrer Restrictions** in Google Cloud Console matching your domain name.
+3. Pass the key into `VITE_GOOGLE_MAPS_API_KEY` in `careflow-hero/.env.local`.
+4. **Fallback Mechanism:** If no API key is provided, CareFlow automatically switches to responsive fallback cards with Haversine distance calculations (in km) without crashing.
 
 ---
 
 ## 17. Testing
 
-CareFlow includes automated test coverage for backend business logic and frontend build validation:
+CareFlow maintains full automated test coverage for backend services and frontend builds:
 
-### Running Backend Tests
+### Running Backend Integration Tests
 ```bash
 cd careflow-backend
-./mvnw test
+mvn clean test
 ```
+*Note:* Backend tests execute using an in-memory H2 database profile (`application-test.yml`).
 
-### Running Frontend Validation
+### Running Frontend Type Checking & Build Test
 ```bash
 cd careflow-hero
-
-# Type checking
-npx tsc --noEmit
-
-# Production build verification
 npm run build
 ```
 
 ---
 
-## 18. Production Considerations
+## 18. Deployment
 
-When deploying CareFlow to production environments, adhere to the following best practices:
-
-- **Secret Management:** Inject production secrets (`JWT_SECRET`, database passwords) using cloud vault services (e.g., AWS Secrets Manager, HashiCorp Vault) or container orchestration environment secrets.
-- **HTTPS / TLS Termination:** Ensure all frontend-to-backend traffic is encrypted over HTTPS using reverse proxies (e.g., NGINX, Cloudflare).
-- **Database Connection Pooling:** Optimize HikariCP connection pool settings based on production concurrency workloads.
-- **CORS Hardening:** Restrict `CORS_ALLOWED_ORIGINS` to explicit production domain names.
-- **Actuator Endpoint Security:** Restrict sensitive actuator endpoints while exposing `/actuator/health` to load balancer health probes.
+When deploying CareFlow to production servers:
+1. **Environment Secrets:** Inject `JWT_SECRET`, `DATABASE_PASSWORD`, and `GOOGLE_MAPS_API_KEY` via container environment variables or cloud secret managers.
+2. **Reverse Proxy:** Place an NGINX or Cloudflare reverse proxy in front of port 8080 for SSL/TLS HTTPS termination.
+3. **CORS Security:** Set `CORS_ALLOWED_ORIGINS` strictly to your production domain URL.
+4. **Database Connection Pooling:** Default HikariCP settings manage automatic connection recycling and health pinging.
 
 ---
 
-## 19. Future Improvements
+## 19. Security
 
-Planned enhancements for future releases of CareFlow:
-
-- **Telehealth Video Consultations:** Integrated WebRTC video room support for virtual doctor visits.
-- **Wearable Device Integration:** Real-time health metrics sync (heart rate, blood pressure) from smartwatches.
-- **Multi-Language Internationalization (i18n):** Support for localized regional languages across symptom triage and UI navigation.
-- **HL7 / FHIR Integration:** Standardized interoperability with external Electronic Health Record (EHR) systems.
-
----
-
-## 20. Contributing
-
-Contributions to CareFlow are welcome! To contribute:
-
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/amazing-feature`).
-3. Commit your changes (`git commit -m 'Add amazing feature'`).
-4. Push to the branch (`git push origin feature/amazing-feature`).
-5. Open a Pull Request with a detailed description of your changes.
-
-Ensure all automated backend tests (`./mvnw test`) and frontend type checks (`npm run build`) pass before submitting your PR.
+CareFlow incorporates security best practices:
+- **IDOR Protection:** Backend services enforce explicit Principal ownership checks (`getAppointmentByIdSecure`, `getHealthRecordByIdSecure`, `getPrescriptionByIdSecure`).
+- **Role-Based Guards:** Methods annotated with `@PreAuthorize("hasRole('PATIENT')")`, `hasRole('DOCTOR')`, or `hasRole('ADMIN')`.
+- **Global Error Sanitization:** `GlobalExceptionHandler` returns structured JSON error payloads and hides internal stack traces.
+- **Zero Secrets Tracked:** Sensitive configuration parameters are managed via environment variables.
 
 ---
 
-## 21. License
+## 20. Known Limitations
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+- **Telehealth Video:** Current release supports offline in-person consultations. Live WebRTC video consultation rooms are scheduled for future milestone releases.
+- **External SMS Gateway:** In-app notifications are stored in MySQL and served via REST API. Direct SMS delivery via external providers (e.g. Twilio) requires plugin activation.
+
+---
+
+## 21. Future Improvements
+
+- **WebRTC Video Consultations:** Integrated virtual appointment rooms for remote healthcare visits.
+- **Wearable Health Sync:** Automated ingestion of vital signs (heart rate, blood pressure) from smartwatch APIs.
+- **Multi-Language Support (i18n):** Support for localized regional languages.
+- **FHIR / HL7 EHR Export:** Standardized medical record exports compatible with hospital systems.
+
+---
+
+## 22. Team & Authors
+
+CareFlow is developed and maintained by the CareFlow Engineering Team.
+
+- **GitHub:** [https://github.com/your-username/CareFlow](https://github.com/your-username/CareFlow)
+- **License:** MIT License
 
 ---
 
 <p align="center">
-  <b>CareFlow — Connecting Patients to Care with Intelligence and Speed.</b>
+  <b>CareFlow — Connecting Patients to Intelligent Healthcare.</b>
 </p>

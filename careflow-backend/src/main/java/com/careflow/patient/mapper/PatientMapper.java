@@ -10,12 +10,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface PatientMapper {
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     Patient toEntity(PatientRequest request);
 
     @Mapping(target = "userId", source = "user.id")
@@ -23,11 +18,6 @@ public interface PatientMapper {
     @Mapping(target = "email", source = "user.email")
     PatientResponse toResponse(Patient patient);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     void updatePatientFromDto(PatientRequest request, @MappingTarget Patient patient);
 }

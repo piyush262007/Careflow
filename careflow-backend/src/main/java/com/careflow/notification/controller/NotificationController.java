@@ -44,6 +44,20 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.success(response, "Notification marked as read"));
     }
 
+    @PutMapping("/read-all")
+    @Operation(summary = "Mark all notifications as read", description = "Marks all unread notifications for the authenticated user as read.")
+    public ResponseEntity<ApiResponse<String>> markAllAsRead(Principal principal) {
+        notificationService.markAllAsRead(principal.getName());
+        return ResponseEntity.ok(ApiResponse.success("All notifications marked as read"));
+    }
+
+    @GetMapping("/unread-count")
+    @Operation(summary = "Get unread notifications count", description = "Returns total count of unread notifications for the header badge.")
+    public ResponseEntity<ApiResponse<Long>> getUnreadCount(Principal principal) {
+        long count = notificationService.getUnreadCount(principal.getName());
+        return ResponseEntity.ok(ApiResponse.success(count));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete notification", description = "Deletes a notification by ID.")
     public ResponseEntity<ApiResponse<String>> deleteNotification(

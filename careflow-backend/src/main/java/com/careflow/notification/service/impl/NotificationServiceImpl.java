@@ -3,6 +3,7 @@ package com.careflow.notification.service.impl;
 import com.careflow.auth.entity.User;
 import com.careflow.auth.repository.UserRepository;
 import com.careflow.common.exception.BadRequestException;
+import com.careflow.common.exception.ForbiddenException;
 import com.careflow.common.exception.ResourceNotFoundException;
 import com.careflow.notification.dto.NotificationDto;
 import com.careflow.notification.entity.Notification;
@@ -55,8 +56,8 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", id));
 
-        if (!notification.getUser().getEmail().equals(userEmail)) {
-            throw new BadRequestException("Unauthorized access to notification");
+        if (!notification.getUser().getEmail().equalsIgnoreCase(userEmail)) {
+            throw new ForbiddenException("Unauthorized access to notification.");
         }
 
         notification.setReadStatus(true);
@@ -66,12 +67,27 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
+    public void markAllAsRead(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", userEmail));
+
+        List<Notification> unreadList = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+        for (Notification notif : unreadList) {
+            if (!notif.isReadStatus()) {
+                notif.setReadStatus(true);
+            }
+        }
+        notificationRepository.saveAll(unreadList);
+    }
+
+    @Override
+    @Transactional
     public void deleteNotification(Long id, String userEmail) {
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", id));
 
-        if (!notification.getUser().getEmail().equals(userEmail)) {
-            throw new BadRequestException("Unauthorized access to notification");
+        if (!notification.getUser().getEmail().equalsIgnoreCase(userEmail)) {
+            throw new ForbiddenException("Unauthorized access to notification.");
         }
 
         notificationRepository.delete(notification);

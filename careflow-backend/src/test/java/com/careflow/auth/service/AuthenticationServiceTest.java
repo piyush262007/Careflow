@@ -1,8 +1,8 @@
 package com.careflow.auth.service;
 
-import com.careflow.auth.dto.LoginRequest;
-import com.careflow.auth.dto.LoginResponse;
-import com.careflow.auth.dto.RegisterRequest;
+import com.careflow.auth.dto.request.LoginRequest;
+import com.careflow.auth.dto.request.RegisterRequest;
+import com.careflow.auth.dto.response.LoginResponse;
 import com.careflow.auth.entity.Role;
 import com.careflow.auth.entity.User;
 import com.careflow.auth.jwt.JwtService;
@@ -91,13 +91,13 @@ class AuthenticationServiceTest {
     void login_ShouldReturnLoginResponse_WhenCredentialsAreValid() {
         when(userRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.of(testUser));
         when(jwtService.generateToken(testUser)).thenReturn("mock_jwt_token");
-        when(jwtService.generateRefreshToken(testUser)).thenReturn("mock_refresh_token");
+        when(refreshTokenRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         LoginResponse response = authenticationService.login(loginRequest);
 
         assertNotNull(response);
-        assertEquals("mock_jwt_token", response.getAccessToken());
-        assertEquals("mock_refresh_token", response.getRefreshToken());
+        assertEquals("mock_jwt_token", response.getToken());
+        assertNotNull(response.getRefreshToken());
         verify(authenticationManager).authenticate(any());
     }
 }

@@ -1,8 +1,8 @@
 package com.careflow.auth.controller;
 
-import com.careflow.auth.dto.LoginRequest;
-import com.careflow.auth.dto.LoginResponse;
-import com.careflow.auth.dto.RegisterRequest;
+import com.careflow.auth.dto.request.LoginRequest;
+import com.careflow.auth.dto.request.RegisterRequest;
+import com.careflow.auth.dto.response.LoginResponse;
 import com.careflow.auth.entity.Role;
 import com.careflow.auth.service.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +44,7 @@ class AuthControllerIntegrationTest {
                 .build();
 
         LoginResponse loginResponse = LoginResponse.builder()
-                .accessToken("mock_access_token")
+                .token("mock_access_token")
                 .refreshToken("mock_refresh_token")
                 .tokenType("Bearer")
                 .expiresIn(86400000L)
@@ -57,6 +57,6 @@ class AuthControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.accessToken").value("mock_access_token"));
+                .andExpect(jsonPath("$.data.token").value("mock_access_token"));
     }
 }

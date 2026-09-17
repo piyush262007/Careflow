@@ -32,6 +32,12 @@ public class HospitalResponse {
     private Boolean emergencyAvailable;
     private Boolean isOpen24Hours;
     private String imageUrl;
+    private Double distanceKm;
+    private Integer currentQueueCount;
+    private Integer estimatedWaitMinutes;
+    private Integer availableDoctorsCount;
+    private java.util.List<String> departments;
+    private String hospitalStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

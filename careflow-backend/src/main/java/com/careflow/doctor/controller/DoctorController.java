@@ -100,21 +100,6 @@ public class DoctorController {
         return ResponseEntity.ok(ApiResponse.success("Doctor deleted successfully"));
     }
 
-    @GetMapping("/specializations")
-    @Operation(summary = "List all specializations", description = "Retrieves clinical specializations.")
-    public ResponseEntity<ApiResponse<List<SpecializationDto>>> getAllSpecializations() {
-        List<SpecializationDto> response = doctorService.getAllSpecializations();
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    @PostMapping("/specializations")
-    @PreAuthorize("hasRole('ADMIN')")
-    @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Create specialization", description = "Adds a clinical specialization category (Requires ADMIN role).")
-    public ResponseEntity<ApiResponse<SpecializationDto>> createSpecialization(@Valid @RequestBody SpecializationDto dto) {
-        SpecializationDto response = doctorService.createSpecialization(dto);
-        return new ResponseEntity<>(ApiResponse.success(response, "Specialization created successfully"), HttpStatus.CREATED);
-    }
 
     @GetMapping("/doctors/{doctorId}/schedule")
     @Operation(summary = "Get doctor schedule & time slots", description = "Retrieves schedule configuration and generated available slots for a target date.")

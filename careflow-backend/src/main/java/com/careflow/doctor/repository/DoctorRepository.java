@@ -15,6 +15,12 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
     List<Doctor> findBySpecializationId(Long specializationId);
 
+    java.util.Optional<Doctor> findByEmail(String email);
+
+    java.util.Optional<Doctor> findByEmailIgnoreCase(String email);
+
+    java.util.Optional<Doctor> findByUserId(Long userId);
+
     @Query("SELECT DISTINCT d FROM Doctor d " +
            "LEFT JOIN DoctorSchedule ds ON ds.doctor.id = d.id " +
            "WHERE (:hospitalId IS NULL OR d.hospital.id = :hospitalId) " +

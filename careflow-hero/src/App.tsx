@@ -19,23 +19,29 @@ import { ShowcaseProvider } from './context/ShowcaseContext';
 import { AuthProvider } from './context/AuthContext';
 import { AppointmentProvider } from './context/AppointmentContext';
 import { AuthLayout } from './components/auth/AuthLayout';
-import { AppLayout } from './components/layout/AppLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { FloatingDockNav } from './components/navigation/FloatingDockNav';
-import { SessionExpiredModal } from './components/ui/SessionExpiredModal';
 import { PageLoader } from './components/ui/PageLoader';
 import { AppointmentBookingFlow } from './components/booking/AppointmentBookingFlow';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Lazy Loaded Workspace Components for Performance
-const PatientDashboard = lazy(() => import('./components/dashboard/PatientDashboard').then((m) => ({ default: m.PatientDashboard })));
+// Role-Based Workspaces
+import PatientDashboard from './components/dashboard/PatientDashboard';
+import DoctorDashboard from './components/doctor/DoctorDashboard';
+import { AdminDashboard } from './components/dashboard/AdminDashboard';
+
+import { NearbyHospitalsPage } from './components/hospitals/NearbyHospitalsPage';
+import { AppointmentsPage } from './components/appointments/AppointmentsPage';
+import { LiveQueueModule } from './components/queue/LiveQueueModule';
+import PatientDoctorsPage from './components/doctor/PatientDoctorsPage';
+import PatientPrescriptionsPage from './components/prescriptions/PatientPrescriptionsPage';
+import PatientRecordsPage from './components/records/PatientRecordsPage';
+import NotificationCenter from './components/notifications/NotificationCenter';
+
+// Lazy Loaded Workspace Components
 const TodayCarePage = lazy(() => import('./components/dashboard/TodayCarePage').then((m) => ({ default: m.TodayCarePage })));
-const NearbyHospitalsPage = lazy(() => import('./components/hospitals/NearbyHospitalsPage').then((m) => ({ default: m.NearbyHospitalsPage })));
-const AppointmentsPage = lazy(() => import('./components/appointments/AppointmentsPage').then((m) => ({ default: m.AppointmentsPage })));
 const PatientProfilePage = lazy(() => import('./components/profile/PatientProfilePage').then((m) => ({ default: m.PatientProfilePage })));
-const DoctorDashboard = lazy(() => import('./components/doctor/DoctorDashboard').then((m) => ({ default: m.DoctorDashboard })));
-const LiveQueueModule = lazy(() => import('./components/queue/LiveQueueModule').then((m) => ({ default: m.LiveQueueModule })));
 const CompanionPage = lazy(() => import('./components/companion/CompanionPage').then((m) => ({ default: m.CompanionPage })));
+const DoctorConsultationPage = lazy(() => import('./components/doctor/DoctorConsultationPage'));
 
 // Landing Page View Component
 export const LandingPage: React.FC = () => {
@@ -94,36 +100,6 @@ export const LandingPage: React.FC = () => {
   );
 };
 
-const PatientDashboardRouteWrapper: React.FC = () => {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-
-  if (isBookingOpen) {
-    return (
-      <AppointmentBookingFlow
-        onClose={() => setIsBookingOpen(false)}
-        onFinishBooking={() => setIsBookingOpen(false)}
-      />
-    );
-  }
-
-  return <PatientDashboard onOpenBooking={() => setIsBookingOpen(true)} />;
-};
-
-const TodayCareRouteWrapper: React.FC = () => {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-
-  if (isBookingOpen) {
-    return (
-      <AppointmentBookingFlow
-        onClose={() => setIsBookingOpen(false)}
-        onFinishBooking={() => setIsBookingOpen(false)}
-      />
-    );
-  }
-
-  return <TodayCarePage onOpenBooking={() => setIsBookingOpen(true)} />;
-};
-
 export const AppRoutes: React.FC = () => {
   const location = useLocation();
 
@@ -132,7 +108,7 @@ export const AppRoutes: React.FC = () => {
     if (authPaths.includes(pathname)) {
       return '/auth';
     }
-    const workspacePaths = ['/patient', '/today-care', '/hospitals', '/appointments', '/profile', '/doctor', '/queue', '/companion'];
+    const workspacePaths = ['/patient', '/doctor', '/admin', '/today-care', '/hospitals', '/appointments', '/profile', '/queue', '/companion'];
     if (workspacePaths.some((p) => pathname.startsWith(p))) {
       return '/app';
     }
@@ -140,101 +116,233 @@ export const AppRoutes: React.FC = () => {
   };
 
   return (
-    <>
-      <AnimatePresence>
-        <motion.div
-          key={getRouteKey(location.pathname)}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="min-h-screen w-full"
-        >
-          <Suspense fallback={<PageLoader />}>
-            <Routes location={location}>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/welcome" element={<AuthLayout viewOverride="welcome" />} />
-              <Route path="/role-selection" element={<AuthLayout viewOverride="role-selection" />} />
-              <Route path="/login" element={<AuthLayout viewOverride="login" />} />
-              <Route path="/register" element={<AuthLayout viewOverride="register" />} />
-              <Route path="/forgot-password" element={<AuthLayout viewOverride="forgot-password" />} />
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={getRouteKey(location.pathname)}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="min-h-screen w-full"
+      >
+        <Suspense fallback={<PageLoader />}>
+          <Routes location={location}>
+            {/* Public Landing Page */}
+            <Route path="/" element={<LandingPage />} />
 
-              <Route element={<AppLayout />}>
-                <Route
-                  path="/patient"
-                  element={
-                    <ProtectedRoute allowedRoles={['patient']}>
-                      <PatientDashboardRouteWrapper />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/today-care"
-                  element={
-                    <ProtectedRoute allowedRoles={['patient']}>
-                      <TodayCareRouteWrapper />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/hospitals"
-                  element={
-                    <ProtectedRoute>
-                      <NearbyHospitalsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/appointments"
-                  element={
-                    <ProtectedRoute allowedRoles={['patient']}>
-                      <AppointmentsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute allowedRoles={['patient']}>
-                      <PatientProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/doctor"
-                  element={
-                    <ProtectedRoute allowedRoles={['doctor']}>
-                      <DoctorDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/queue"
-                  element={
-                    <ProtectedRoute>
-                      <LiveQueueModule />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/companion"
-                  element={
-                    <ProtectedRoute>
-                      <CompanionPage />
-                    </ProtectedRoute>
-                  }
-                />
-              </Route>
+            {/* Authentication Routes */}
+            <Route path="/login" element={<AuthLayout viewOverride="login" />} />
+            <Route path="/register" element={<AuthLayout viewOverride="register" />} />
+            <Route path="/welcome" element={<AuthLayout viewOverride="welcome" />} />
+            <Route path="/role-selection" element={<AuthLayout viewOverride="role-selection" />} />
+            <Route path="/forgot-password" element={<AuthLayout viewOverride="forgot-password" />} />
 
-              <Route path="*" element={<LandingPage />} />
-            </Routes>
-          </Suspense>
-        </motion.div>
-      </AnimatePresence>
+            {/* Role-Protected Patient Routes */}
+            <Route
+              path="/patient"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <PatientDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <PatientDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/doctors"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <PatientDoctorsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/doctors/:doctorId"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <PatientDoctorsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/appointments"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <AppointmentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/appointments/book"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <PatientDoctorsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/appointments/:appointmentId"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <AppointmentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/prescriptions"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <PatientPrescriptionsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/records"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <PatientRecordsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/records/:recordId"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <PatientRecordsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/hospitals"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT', 'DOCTOR', 'ADMIN']}>
+                  <NearbyHospitalsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/hospitals/:hospitalId"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT', 'DOCTOR', 'ADMIN']}>
+                  <NearbyHospitalsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT', 'DOCTOR', 'ADMIN']}>
+                  <NotificationCenter />
+                </ProtectedRoute>
+              }
+            />
 
-      <FloatingDockNav />
-      <SessionExpiredModal />
-    </>
+            {/* Role-Protected Doctor Routes */}
+            <Route
+              path="/doctor"
+              element={
+                <ProtectedRoute allowedRoles={['DOCTOR']}>
+                  <DoctorDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doctor/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['DOCTOR']}>
+                  <DoctorDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doctor/appointments/:appointmentId"
+              element={
+                <ProtectedRoute allowedRoles={['DOCTOR']}>
+                  <DoctorConsultationPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Role-Protected Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Additional Protected App Routes */}
+            <Route
+              path="/today-care"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <TodayCarePage onOpenBooking={() => {}} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hospitals"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT', 'DOCTOR', 'ADMIN']}>
+                  <NearbyHospitalsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appointments"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <AppointmentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT']}>
+                  <PatientProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/queue"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT', 'DOCTOR', 'ADMIN']}>
+                  <LiveQueueModule />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/companion"
+              element={
+                <ProtectedRoute allowedRoles={['PATIENT', 'DOCTOR', 'ADMIN']}>
+                  <CompanionPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Fallback Catch-All */}
+            <Route path="*" element={<LandingPage />} />
+          </Routes>
+        </Suspense>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

@@ -33,6 +33,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, ex.getErrorCode().getHttpStatus());
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex, HttpServletRequest request) {
+        log.warn("AccessDeniedException on request: {}", request.getRequestURI());
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .success(false)
+                .status(HttpStatus.FORBIDDEN.value())
+                .errorCode("FORBIDDEN_ACCESS")
+                .error(HttpStatus.FORBIDDEN.getReasonPhrase())
+                .message("Access Denied: You do not have permission to access this resource")
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
         log.error("Validation error on request: {}", request.getRequestURI());

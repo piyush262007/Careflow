@@ -16,13 +16,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import lombok.experimental.SuperBuilder;
+
 @Entity
 @Table(name = "ai_consultations")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class AIConsultation extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

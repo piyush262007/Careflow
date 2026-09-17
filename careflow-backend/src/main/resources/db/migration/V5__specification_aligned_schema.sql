@@ -1,45 +1,34 @@
 -- CareFlow V5 Complete Schema Migration aligned to Senior Architect Specification
 
 -- 1. Align Patients Table Columns
-ALTER TABLE patients 
-    ADD COLUMN IF NOT EXISTS height_cm DECIMAL(5,2) AFTER date_of_birth,
-    ADD COLUMN IF NOT EXISTS weight_kg DECIMAL(5,2) AFTER height_cm;
+ALTER TABLE patients ADD COLUMN height_cm DECIMAL(5,2);
+ALTER TABLE patients ADD COLUMN weight_kg DECIMAL(5,2);
 
 -- 2. Align Hospitals Table Columns & Indexes
-ALTER TABLE hospitals
-    ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE AFTER image_url,
-    MODIFY COLUMN latitude DECIMAL(10,7) NOT NULL,
-    MODIFY COLUMN longitude DECIMAL(10,7) NOT NULL,
-    MODIFY COLUMN rating DECIMAL(2,1) DEFAULT 4.5;
+ALTER TABLE hospitals ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
 
-CREATE INDEX IF NOT EXISTS idx_hospital_name ON hospitals(name);
-CREATE INDEX IF NOT EXISTS idx_hospital_geo ON hospitals(latitude, longitude);
+CREATE INDEX idx_hospital_name ON hospitals(name);
+CREATE INDEX idx_hospital_geo ON hospitals(latitude, longitude);
 
 -- 3. Align Doctors Table Columns & Indexes
-ALTER TABLE doctors
-    ADD COLUMN IF NOT EXISTS user_id BIGINT UNIQUE AFTER id,
-    ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    MODIFY COLUMN qualification VARCHAR(300),
-    MODIFY COLUMN consultation_mode VARCHAR(20) DEFAULT 'OFFLINE',
-    MODIFY COLUMN status VARCHAR(30) DEFAULT 'ACTIVE';
+ALTER TABLE doctors ADD COLUMN user_id BIGINT UNIQUE;
+ALTER TABLE doctors ADD CONSTRAINT fk_doctor_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
 
-CREATE INDEX IF NOT EXISTS idx_doctor_status ON doctors(status);
+CREATE INDEX idx_doctor_status ON doctors(status);
 
 -- 4. Align Doctor Schedules Table Columns & Indexes
-ALTER TABLE doctor_schedules
-    ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE AFTER max_appointments;
+ALTER TABLE doctor_schedules ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT TRUE;
 
-CREATE INDEX IF NOT EXISTS idx_schedule_day_doctor ON doctor_schedules(day_of_week, doctor_id);
+CREATE INDEX idx_schedule_day_doctor ON doctor_schedules(day_of_week, doctor_id);
 
 -- 5. Align Appointments Table Columns & Indexes
-ALTER TABLE appointments
-    ADD COLUMN IF NOT EXISTS appointment_reference VARCHAR(100) UNIQUE AFTER notes;
+ALTER TABLE appointments ADD COLUMN appointment_reference VARCHAR(100) UNIQUE;
 
 -- Add Unique Constraint to prevent double-booking on same doctor, date & time slot
 ALTER TABLE appointments ADD CONSTRAINT uk_doctor_appointment_slot UNIQUE (doctor_id, appointment_date, appointment_time, status);
 
-CREATE INDEX IF NOT EXISTS idx_appointment_hospital ON appointments(hospital_id);
-CREATE INDEX IF NOT EXISTS idx_appointment_date ON appointments(appointment_date);
+CREATE INDEX idx_appointment_hospital ON appointments(hospital_id);
+CREATE INDEX idx_appointment_date ON appointments(appointment_date);
 
 -- 6. Align AI Consultations Table Columns & Indexes
 CREATE TABLE IF NOT EXISTS ai_consultations (
@@ -50,7 +39,7 @@ CREATE TABLE IF NOT EXISTS ai_consultations (
     duration VARCHAR(100),
     predicted_department VARCHAR(150),
     severity VARCHAR(30),
-    confidence_score DECIMAL(5,2),
+    confidence_score INT NOT NULL,
     recommended_hospital_id BIGINT NULL,
     recommended_doctor_id BIGINT NULL,
     recommendation_reason TEXT,
@@ -63,9 +52,7 @@ CREATE TABLE IF NOT EXISTS ai_consultations (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 7. Align Notifications Table Columns & Indexes
-CREATE INDEX IF NOT EXISTS idx_notification_user ON notifications(user_id);
-CREATE INDEX IF NOT EXISTS idx_notification_read ON notifications(is_read);
-CREATE INDEX IF NOT EXISTS idx_notification_created ON notifications(created_at);
+CREATE INDEX idx_notification_user ON notifications(user_id);
 
 -- 8. Health Records Table
 CREATE TABLE IF NOT EXISTS health_records (
@@ -92,6 +79,8 @@ CREATE TABLE IF NOT EXISTS medical_history (
     status VARCHAR(50),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
     CONSTRAINT fk_medhistory_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
     INDEX idx_medhistory_patient (patient_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -103,12 +92,15 @@ CREATE TABLE IF NOT EXISTS qr_codes (
     qr_token VARCHAR(255) NOT NULL UNIQUE,
     file_path VARCHAR(500),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
     expires_at TIMESTAMP NULL,
     CONSTRAINT fk_qrcode_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 11. Refresh Tokens Table (Secure Token Hash)
-ALTER TABLE refresh_tokens ADD COLUMN IF NOT EXISTS token_hash VARCHAR(255) UNIQUE AFTER token;
+ALTER TABLE refresh_tokens ADD COLUMN token_hash VARCHAR(255) UNIQUE;
 
 -- 12. Hospital Live Status Table (CareFlow Signature Queue & ER Status Feature)
 CREATE TABLE IF NOT EXISTS hospital_live_status (
@@ -120,6 +112,10 @@ CREATE TABLE IF NOT EXISTS hospital_live_status (
     icu_beds_available INT DEFAULT 0,
     emergency_status VARCHAR(30) DEFAULT 'AVAILABLE',
     last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by VARCHAR(100),
+    updated_by VARCHAR(100),
     CONSTRAINT fk_livestatus_hospital FOREIGN KEY (hospital_id) REFERENCES hospitals(id) ON DELETE CASCADE,
     INDEX idx_livestatus_hospital (hospital_id),
     INDEX idx_livestatus_updated (last_updated)

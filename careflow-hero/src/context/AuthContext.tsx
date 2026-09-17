@@ -1,18 +1,21 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authService } from '../services/authService';
-import type { UserResponse } from '../services/authService';
+import { mockAuthService } from '../services/mockAuthService';
 
+export type UserRole = 'PATIENT' | 'DOCTOR' | 'ADMIN';
 export type AuthView = 'welcome' | 'role-selection' | 'login' | 'register' | 'forgot-password';
-export type UserRole = 'patient' | 'doctor' | 'hospital';
 
-export interface UserProfile {
-  id?: number;
+export interface User {
+  id: string;
   name: string;
   email: string;
   role: UserRole;
   avatar?: string;
-  workspaceName?: string;
+  phone?: string;
+  address?: string;
 }
+
+export type UserProfile = User;
 
 interface AuthContextType {
   activeView: AuthView;
@@ -23,240 +26,187 @@ interface AuthContextType {
   setIsAuthOpen: (isOpen: boolean) => void;
   isAuthenticated: boolean;
   isLoading: boolean;
-  user: UserProfile | null;
-  loginApi: (email: string, password: string) => Promise<void>;
-  registerApi: (fullName: string, email: string, password: string) => Promise<void>;
-  login: (email?: string, role?: UserRole) => void;
+  user: User | null;
+  currentUser: User | null;
+  login: (email: string, password: string) => Promise<User>;
+  register: (fullName: string, email: string, password: string, role?: UserRole) => Promise<User>;
   logout: () => void;
-  loginDemoUser: (role: UserRole) => void;
+  loginDemoUser: (role: UserRole) => Promise<User>;
   logoutUser: () => void;
   error: string | null;
   setError: (msg: string | null) => void;
 }
 
+const STORAGE_KEY = 'careflow_auth_user';
+const ACCESS_TOKEN_KEY = 'careflow_access_token';
+const REFRESH_TOKEN_KEY = 'careflow_refresh_token';
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-function formatAuthError(err: any, fallbackMessage: string): string {
-  if (!err.response) {
-    return 'Unable to connect to CareFlow server. Please make sure the backend is running.';
-  }
-  const status = err.response.status;
-  const backendMsg = err.response.data?.message;
-
-  if (status === 400) {
-    return backendMsg || 'Invalid registration details. Password must contain at least 8 characters, an uppercase letter, a number, and a special symbol.';
-  }
-  if (status === 401) {
-    return 'Invalid email or password.';
-  }
-  if (status === 409) {
-    return backendMsg || 'An account with this email address already exists.';
-  }
-  if (status >= 500) {
-    return 'Something went wrong on the server. Please try again later.';
-  }
-  return backendMsg || fallbackMessage;
-}
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeView, setActiveView] = useState<AuthView>('welcome');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('patient');
+  const [activeView, setActiveView] = useState<AuthView>('login');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('PATIENT');
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [user, setUser] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const mapBackendRole = (role?: string): UserRole => {
-    if (role === 'DOCTOR') return 'doctor';
-    if (role === 'ADMIN') return 'hospital';
-    return 'patient';
-  };
-
-  const syncUserFromBackend = (backendUser: UserResponse) => {
-    const roleMapped = mapBackendRole(backendUser.role);
-    setUser({
-      id: backendUser.id,
-      name: backendUser.fullName,
-      email: backendUser.email,
-      role: roleMapped,
-      workspaceName:
-        roleMapped === 'patient'
-          ? 'Patient Medical Workspace'
-          : roleMapped === 'doctor'
-          ? 'Doctor Clinical Suite'
-          : 'CareFlow Command Center',
-    });
-    setSelectedRole(roleMapped);
-    setIsAuthenticated(true);
-  };
-
-  // Check persistent session on mount
+  // Restore authenticated session on initial mount
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('careflow_access_token');
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
+    const restoreSession = async () => {
       try {
-        const res = await authService.getCurrentUser();
-        if (res.success && res.data) {
-          syncUserFromBackend(res.data);
-        } else {
-          localStorage.removeItem('careflow_access_token');
-          localStorage.removeItem('careflow_refresh_token');
+        const storedUserJson = localStorage.getItem(STORAGE_KEY);
+        const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+
+        if (storedUserJson) {
+          const parsedUser: User = JSON.parse(storedUserJson);
+          if (parsedUser && parsedUser.email && parsedUser.role) {
+            setUser(parsedUser);
+            setSelectedRole(parsedUser.role);
+          }
         }
-      } catch {
-        if (token.startsWith('mock_jwt_token_')) {
-          setUser({
-            id: 1,
-            name: 'Sarah Jenkins',
-            email: 'patient@careflow.com',
-            role: 'patient',
-            workspaceName: 'Patient Medical Workspace',
-          });
-          setIsAuthenticated(true);
-        } else {
-          localStorage.removeItem('careflow_access_token');
-          localStorage.removeItem('careflow_refresh_token');
+
+        // Verify session with Spring Boot backend /auth/me if token exists
+        if (token) {
+          try {
+            const meRes = await authService.getCurrentUser();
+            if (meRes?.success && meRes?.data) {
+              const verifiedUser: User = {
+                id: String(meRes.data.id),
+                name: meRes.data.fullName,
+                email: meRes.data.email,
+                role: meRes.data.role,
+              };
+              setUser(verifiedUser);
+              setSelectedRole(verifiedUser.role);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(verifiedUser));
+            }
+          } catch {
+            // Token might be expired or backend unreachable; keep cached session for offline UX
+          }
         }
+      } catch (e) {
+        console.error('Failed to restore CareFlow session:', e);
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkAuth();
+    restoreSession();
   }, []);
 
-  const loginApi = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
+
     try {
-      const res = await authService.login(email, password);
-      if (res.success && res.data) {
-        localStorage.setItem('careflow_access_token', res.data.accessToken);
-        localStorage.setItem('careflow_refresh_token', res.data.refreshToken);
-        syncUserFromBackend(res.data.user);
+      // Attempt real Spring Boot authentication API
+      const apiRes = await authService.login(email, password);
+
+      if (apiRes && apiRes.success && apiRes.data) {
+        const loginData = apiRes.data;
+        const jwtToken = loginData.token || loginData.accessToken;
+        if (jwtToken) {
+          localStorage.setItem(ACCESS_TOKEN_KEY, jwtToken);
+        }
+        if (loginData.refreshToken) {
+          localStorage.setItem(REFRESH_TOKEN_KEY, loginData.refreshToken);
+        }
+
+        const authenticatedUser: User = {
+          id: String(loginData.userId || loginData.user?.id || '1'),
+          name: loginData.fullName || loginData.user?.fullName || email.split('@')[0],
+          email: loginData.email || loginData.user?.email || email,
+          role: (loginData.role || loginData.user?.role || 'PATIENT') as UserRole,
+        };
+
+        setUser(authenticatedUser);
+        setSelectedRole(authenticatedUser.role);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(authenticatedUser));
+        return authenticatedUser;
       } else {
-        throw new Error(res.message || 'Login failed');
+        throw new Error(apiRes.message || 'Authentication failed');
       }
     } catch (err: any) {
-      if (!err.response) {
-        console.warn('CareFlow Backend at http://localhost:8080 is offline. Proceeding in offline dev mode.');
-        const offlineUser: UserResponse = {
-          id: Date.now(),
-          fullName: email.split('@')[0] || 'CareFlow Patient',
-          email: email,
-          role: 'PATIENT',
-          enabled: true,
-          createdAt: new Date().toISOString(),
-        };
-        const mockToken = 'mock_jwt_token_' + Date.now();
-        localStorage.setItem('careflow_access_token', mockToken);
-        localStorage.setItem('careflow_refresh_token', 'mock_refresh_token');
-        syncUserFromBackend(offlineUser);
-        return;
+      console.warn('Real Spring Boot login failed/unreachable. Attempting demo fallback:', err);
+      
+      // Fallback for offline/demo evaluation
+      try {
+        const mockRes = await mockAuthService.login(email, password);
+        setUser(mockRes.user);
+        setSelectedRole(mockRes.user.role);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mockRes.user));
+        return mockRes.user;
+      } catch (mockErr: any) {
+        const formattedMsg =
+          err?.response?.data?.message ||
+          err?.message ||
+          'Unable to connect to CareFlow backend server. Please verify backend is running.';
+        setError(formattedMsg);
+        throw new Error(formattedMsg);
       }
-      const formatted = formatAuthError(err, 'Invalid email or password.');
-      setError(formatted);
-      throw new Error(formatted);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const registerApi = async (fullName: string, email: string, password: string) => {
+  const register = async (
+    fullName: string,
+    email: string,
+    password: string,
+    role: UserRole = 'PATIENT'
+  ): Promise<User> => {
     setIsLoading(true);
     setError(null);
+
     try {
-      const res = await authService.register({ fullName, email, password, role: 'PATIENT' });
-      if (res.success) {
-        await loginApi(email, password);
+      const apiRes = await authService.register({ fullName, email, password, role });
+      if (apiRes && apiRes.success) {
+        // Automatically log in after registration
+        return await login(email, password);
       } else {
-        throw new Error(res.message || 'Registration failed');
+        throw new Error(apiRes.message || 'Registration failed');
       }
     } catch (err: any) {
-      if (!err.response) {
-        console.warn('CareFlow Backend at http://localhost:8080 is offline. Proceeding in offline dev mode.');
-        const offlineUser: UserResponse = {
-          id: Date.now(),
-          fullName: fullName || 'CareFlow Patient',
-          email: email,
-          role: 'PATIENT',
-          enabled: true,
-          createdAt: new Date().toISOString(),
-        };
-        const mockToken = 'mock_jwt_token_' + Date.now();
-        localStorage.setItem('careflow_access_token', mockToken);
-        localStorage.setItem('careflow_refresh_token', 'mock_refresh_token');
-        syncUserFromBackend(offlineUser);
-        return;
+      console.warn('Real Spring Boot registration failed/unreachable. Falling back to mock registration:', err);
+      try {
+        const mockRes = await mockAuthService.register(fullName, email, password, role === 'ADMIN' ? 'PATIENT' : role);
+        setUser(mockRes.user);
+        setSelectedRole(mockRes.user.role);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mockRes.user));
+        return mockRes.user;
+      } catch (mockErr: any) {
+        const msg = err?.response?.data?.message || err?.message || 'Registration failed';
+        setError(msg);
+        throw new Error(msg);
       }
-      const formatted = formatAuthError(err, 'Registration failed.');
-      setError(formatted);
-      throw new Error(formatted);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logoutApi = useCallback(async () => {
-    const refreshToken = localStorage.getItem('careflow_refresh_token');
-    if (refreshToken) {
-      await authService.logout(refreshToken);
-    }
-    localStorage.removeItem('careflow_access_token');
-    localStorage.removeItem('careflow_refresh_token');
-    localStorage.removeItem('careflow_user');
-    setIsAuthenticated(false);
+  const logout = useCallback(async () => {
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    await authService.logout(refreshToken || undefined);
+
     setUser(null);
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
   }, []);
 
-  const login = (email?: string, role?: UserRole) => {
-    loginApi(email || 'patient@careflow.com', 'CareFlow123!').catch(() => {
-      const activeRole = role || selectedRole || 'patient';
-      setUser({
-        name: 'Sarah Jenkins',
-        email: email || 'patient@careflow.com',
-        role: activeRole,
-        workspaceName: 'Cardiology Patient Portal',
-      });
-      setIsAuthenticated(true);
-    });
-  };
-
-  const loginDemoUser = (role: UserRole) => {
-    const emailMap: Record<UserRole, string> = {
-      patient: 'patient@careflow.com',
-      doctor: 'doctor@careflow.com',
-      hospital: 'admin@careflow.com',
+  const loginDemoUser = async (role: UserRole): Promise<User> => {
+    const demoCredentials: Record<UserRole, { email: string; pass: string }> = {
+      ADMIN: { email: 'admin@careflow.com', pass: 'password' },
+      DOCTOR: { email: 'doctor@careflow.com', pass: 'password' },
+      PATIENT: { email: 'patient@careflow.com', pass: 'password' },
     };
-    loginApi(emailMap[role], 'CareFlow123!').catch(() => {
-      const demoProfiles: Record<UserRole, UserProfile> = {
-        patient: {
-          name: 'Sarah Jenkins',
-          email: 'patient@careflow.com',
-          role: 'patient',
-          workspaceName: 'Cardiology Patient Portal',
-        },
-        doctor: {
-          name: 'Dr. Sarah Chen',
-          email: 'doctor@careflow.com',
-          role: 'doctor',
-          workspaceName: 'Chief of Cardiology Suite',
-        },
-        hospital: {
-          name: 'System Admin',
-          email: 'admin@careflow.com',
-          role: 'hospital',
-          workspaceName: 'Hospital Command Center',
-        },
-      };
-      setUser(demoProfiles[role]);
-      setIsAuthenticated(true);
-    });
+
+    const target = demoCredentials[role];
+    return login(target.email, target.pass);
   };
 
   return (
@@ -268,15 +218,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSelectedRole,
         isAuthOpen,
         setIsAuthOpen,
-        isAuthenticated,
+        isAuthenticated: !!user,
         isLoading,
         user,
-        loginApi,
-        registerApi,
+        currentUser: user,
         login,
-        logout: logoutApi,
+        register,
+        logout,
         loginDemoUser,
-        logoutUser: logoutApi,
+        logoutUser: logout,
         error,
         setError,
       }}

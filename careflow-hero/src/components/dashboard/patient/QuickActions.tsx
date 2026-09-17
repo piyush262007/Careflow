@@ -1,86 +1,87 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Calendar, CheckCircle2, Pill, Bot, ArrowUpRight } from 'lucide-react';
+import { Calendar, UserCheck, FileText, Pill } from 'lucide-react';
 
 interface QuickActionsProps {
   onBookAppointment?: () => void;
+  onFindDoctor?: () => void;
+  onViewRecords?: () => void;
+  onViewPrescription?: () => void;
 }
 
-export const QuickActions: React.FC<QuickActionsProps> = ({ onBookAppointment }) => {
+export const QuickActions: React.FC<QuickActionsProps> = ({
+  onBookAppointment,
+  onFindDoctor,
+  onViewRecords,
+  onViewPrescription,
+}) => {
   const actions = [
     {
-      id: 'book',
       title: 'Book Appointment',
-      subtitle: 'Schedule physician visit',
+      subtitle: 'Schedule a visit with specialists',
       icon: Calendar,
-      accentBg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-      action: onBookAppointment,
+      color: 'emerald',
+      onClick: onBookAppointment,
     },
     {
-      id: 'checkin',
-      title: 'Queue Check-In',
-      subtitle: 'Digital arrival pass',
-      icon: CheckCircle2,
-      accentBg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
-      action: () => alert("Checked in! You're in line for Dr. Chen."),
+      title: 'Find Doctor',
+      subtitle: 'Browse qualified doctors & schedules',
+      icon: UserCheck,
+      color: 'blue',
+      onClick: onFindDoctor,
     },
     {
-      id: 'meds',
-      title: 'Log Dose Taken',
-      subtitle: 'Track daily prescriptions',
+      title: 'View Records',
+      subtitle: 'Access lab reports & history',
+      icon: FileText,
+      color: 'purple',
+      onClick: onViewRecords,
+    },
+    {
+      title: 'Digital Prescription',
+      subtitle: 'Check active dosage & refills',
       icon: Pill,
-      accentBg: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20',
-      action: () => alert('Lisinopril 10mg logged as taken at 2:00 PM.'),
-    },
-    {
-      id: 'ai',
-      title: 'Ask AI Companion',
-      subtitle: 'Symptom & visit guidance',
-      icon: Bot,
-      accentBg: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
-      action: () => {
-        const input = document.querySelector('input[placeholder*="Ask CareFlow"]') as HTMLInputElement;
-        if (input) input.focus();
-      },
+      color: 'amber',
+      onClick: onViewPrescription,
     },
   ];
 
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">
-          Quick Actions
-        </h3>
-      </div>
+  const getColorStyles = (color: string) => {
+    switch (color) {
+      case 'emerald':
+        return 'bg-emerald-500/10 border-emerald-500/25 text-emerald-600 dark:text-emerald-400 hover:border-emerald-500/50';
+      case 'blue':
+        return 'bg-blue-500/10 border-blue-500/25 text-blue-600 dark:text-blue-400 hover:border-blue-500/50';
+      case 'purple':
+        return 'bg-purple-500/10 border-purple-500/25 text-purple-600 dark:text-purple-400 hover:border-purple-500/50';
+      case 'amber':
+      default:
+        return 'bg-amber-500/10 border-amber-500/25 text-amber-600 dark:text-amber-400 hover:border-amber-500/50';
+    }
+  };
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {actions.map((act) => {
+  return (
+    <div className="p-6 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-sm space-y-4">
+      <h3 className="font-heading font-extrabold text-sm text-[var(--text-primary)] tracking-tight">
+        Quick Actions
+      </h3>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {actions.map((act, idx) => {
           const Icon = act.icon;
           return (
-            <motion.button
-              key={act.id}
-              type="button"
-              whileHover={{ y: -2, scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={act.action}
-              className="p-4 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-sm hover:shadow-md transition-all duration-300 text-left flex flex-col justify-between space-y-3 cursor-pointer group"
+            <button
+              key={idx}
+              onClick={act.onClick}
+              className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex items-start gap-3 ${getColorStyles(act.color)}`}
             >
-              <div className="flex items-center justify-between">
-                <div className={`p-2.5 rounded-xl border ${act.accentBg}`}>
-                  <Icon className="h-4 w-4" />
-                </div>
-                <ArrowUpRight className="h-4 w-4 text-[var(--text-muted)] group-hover:text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              <div className="p-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-xs shrink-0">
+                <Icon className="w-5 h-5" />
               </div>
-
-              <div>
-                <h4 className="text-xs font-bold text-[var(--text-primary)] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                  {act.title}
-                </h4>
-                <span className="text-[10.5px] text-[var(--text-muted)] block mt-0.5">
-                  {act.subtitle}
-                </span>
+              <div className="min-w-0">
+                <h4 className="font-bold text-xs text-[var(--text-primary)] leading-snug">{act.title}</h4>
+                <p className="text-[11px] text-[var(--text-secondary)] leading-tight mt-0.5">{act.subtitle}</p>
               </div>
-            </motion.button>
+            </button>
           );
         })}
       </div>

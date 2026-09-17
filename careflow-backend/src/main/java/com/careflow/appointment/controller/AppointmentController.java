@@ -42,6 +42,7 @@ public class AppointmentController {
     private final QRCodeService qrCodeService;
 
     @PostMapping
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Book new appointment", description = "Creates a new appointment booking. Validates double booking, doctor operating hours, and capacity limits.")
     public ResponseEntity<ApiResponse<AppointmentResponse>> bookAppointment(
             Principal principal,
@@ -60,6 +61,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/patient")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Get patient appointments", description = "Retrieves all appointments scheduled for the authenticated patient.")
     public ResponseEntity<ApiResponse<List<AppointmentResponse>>> getPatientAppointments(Principal principal) {
         List<AppointmentResponse> response = appointmentService.getAppointmentsForPatient(principal.getName());
@@ -83,10 +85,25 @@ public class AppointmentController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get appointment by ID", description = "Retrieves appointment details by ID.")
-    public ResponseEntity<ApiResponse<AppointmentResponse>> getAppointmentById(@PathVariable Long id) {
-        AppointmentResponse response = appointmentService.getAppointmentById(id);
+    @PreAuthorize("hasRole('PATIENT') or hasRole('DOCTOR') or hasRole('ADMIN')")
+    @Operation(summary = "Get appointment by ID", description = "Retrieves appointment details by ID. Enforces strict ownership access control.")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> getAppointmentById(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        AppointmentResponse response = appointmentService.getAppointmentByIdSecure(id, principal.getName());
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PatchMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('PATIENT') or hasRole('ADMIN')")
+    @Operation(summary = "Patient cancels appointment", description = "Cancels an existing appointment for the authenticated patient.")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> cancelAppointment(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        AppointmentResponse response = appointmentService.cancelAppointmentByPatient(id, principal.getName());
+        return ResponseEntity.ok(ApiResponse.success(response, "Appointment cancelled successfully"));
     }
 
     @GetMapping("/{id}/qr")
@@ -151,6 +168,17 @@ public class AppointmentController {
     ) {
         AppointmentResponse response = appointmentService.rejectSuggestedTimeByPatient(id, principal.getName());
         return ResponseEntity.ok(ApiResponse.success(response, "Proposed appointment time declined"));
+    }
+
+    @PatchMapping("/{id}/start-consultation")
+    @PreAuthorize("hasRole('DOCTOR')")
+    @Operation(summary = "Doctor starts consultation", description = "Updates appointment status to IN_CONSULTATION and notifies patient.")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> startConsultation(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        AppointmentResponse response = appointmentService.startConsultationByDoctor(id, principal.getName());
+        return ResponseEntity.ok(ApiResponse.success(response, "Consultation started successfully"));
     }
 
     @PatchMapping("/{id}/complete")

@@ -1,101 +1,74 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, CheckCircle2, ChevronRight } from 'lucide-react';
-import { AuthButton } from '../../auth/ui/AuthButton';
+import React from 'react';
+import { Calendar, Clock, MapPin, ChevronRight, RefreshCw, XCircle } from 'lucide-react';
+import type { AppointmentData } from '../../../services/mockPatientData';
 
-export const UpcomingAppointmentCard: React.FC = () => {
-  const [isCheckedIn, setIsCheckedIn] = useState(false);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
+interface UpcomingAppointmentCardProps {
+  appointment: AppointmentData;
+}
 
+export const UpcomingAppointmentCard: React.FC<UpcomingAppointmentCardProps> = ({ appointment }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -3 }}
-      transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className="p-6 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-sm hover:shadow-md transition-all duration-300 space-y-4 flex flex-col justify-between"
-    >
-      {/* Top Header */}
+    <div className="p-6 rounded-2xl bg-[var(--bg-surface)] border border-emerald-500/20 shadow-sm space-y-5">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
-            <Calendar className="h-4 w-4" />
-          </div>
-          <h3 className="text-sm font-bold text-[var(--text-primary)]">Upcoming Appointment</h3>
+        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+          <Calendar className="w-4 h-4" />
+          <span>Upcoming Appointment</span>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-          Confirmed
+        <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+          {appointment.status}
         </span>
       </div>
 
-      {/* Doctor, Time & Hospital */}
-      <div className="space-y-3 p-3.5 rounded-xl bg-[var(--bg-card-bg)] border border-[var(--border-subtle)]">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">
-            SC
-          </div>
+      {/* Main Doctor Info */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-[var(--bg-card-bg)] border border-[var(--border-color)] gap-4">
+        <div className="flex items-center gap-3.5">
+          <img
+            src={appointment.doctorAvatar}
+            alt={appointment.doctorName}
+            className="w-14 h-14 rounded-2xl object-cover border border-emerald-500/30 shadow-sm shrink-0"
+          />
           <div>
-            <span className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400 tracking-wider block">Doctor</span>
-            <h4 className="text-xs font-bold text-[var(--text-primary)]">Dr. Sarah Chen</h4>
-            <span className="text-[11px] text-[var(--text-secondary)]">Cardiology & Internal Medicine</span>
+            <h3 className="font-bold text-base text-[var(--text-primary)]">{appointment.doctorName}</h3>
+            <p className="text-xs text-[var(--text-secondary)] font-medium">{appointment.specialty}</p>
+            <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] mt-1">
+              <MapPin className="w-3.5 h-3.5 text-emerald-500" />
+              <span>{appointment.hospital} ({appointment.room})</span>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-[11px] text-[var(--text-secondary)] pt-2.5 border-t border-[var(--border-subtle)]">
-          <div>
-            <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-0.5">Time</span>
-            <div className="flex items-center gap-1.5 font-semibold text-[var(--text-primary)]">
-              <Clock className="h-3.5 w-3.5 text-blue-500 shrink-0" />
-              <span>10:30 AM Today</span>
-            </div>
+        <div className="flex flex-col sm:items-end text-xs space-y-1 pl-2 sm:pl-0 border-l sm:border-l-0 border-[var(--border-subtle)]">
+          <div className="flex items-center gap-1 font-bold text-[var(--text-primary)]">
+            <Calendar className="w-3.5 h-3.5 text-emerald-500" />
+            <span>{appointment.date}</span>
           </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-0.5">Hospital</span>
-            <div className="flex items-center gap-1.5 font-semibold text-[var(--text-primary)]">
-              <MapPin className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-              <span className="truncate">St. Jude, Suite 402</span>
-            </div>
+          <div className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+            <Clock className="w-3.5 h-3.5" />
+            <span>{appointment.time}</span>
           </div>
+          <span className="text-[10px] text-[var(--text-muted)]">{appointment.type}</span>
         </div>
       </div>
 
-      {/* Action Controls */}
-      <div className="space-y-2">
-        {isCheckedIn ? (
-          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center gap-2 justify-center">
-            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-            <span>Checked In! You're ready.</span>
-          </div>
-        ) : (
-          <AuthButton
-            variant="primary"
-            icon={CheckCircle2}
-            onClick={() => setIsCheckedIn(true)}
-          >
-            Digital Check-in
-          </AuthButton>
-        )}
-
-        <button
-          type="button"
-          onClick={() => setShowDetailsModal(!showDetailsModal)}
-          className="w-full py-2 px-3 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-        >
-          <span>{showDetailsModal ? 'Hide Details' : 'View Details'}</span>
-          <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+      {/* Action Buttons */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[var(--border-subtle)]">
+        <button className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer">
+          <span>View Appointment Pass</span>
+          <ChevronRight className="w-3.5 h-3.5" />
         </button>
 
-        {showDetailsModal && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="p-3 rounded-xl bg-[var(--bg-card-bg)] border border-[var(--border-subtle)] text-[11px] text-[var(--text-secondary)] space-y-1.5"
-          >
-            <p><strong>Preparation:</strong> Fasting not required for blood pressure check.</p>
-            <p><strong>Parking:</strong> Visitor Deck B, Level 2.</p>
-          </motion.div>
-        )}
+        <div className="flex items-center gap-2">
+          <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--bg-card-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)] transition-colors cursor-pointer">
+            <RefreshCw className="w-3 h-3" />
+            <span>Reschedule</span>
+          </button>
+          <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 border border-rose-500/20 transition-colors cursor-pointer">
+            <XCircle className="w-3 h-3" />
+            <span>Cancel</span>
+          </button>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

@@ -32,6 +32,7 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping("/profile")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Get patient profile", description = "Retrieves the medical profile of the currently authenticated patient.")
     public ResponseEntity<ApiResponse<PatientResponse>> getMyProfile(Principal principal) {
         PatientResponse response = patientService.getPatientProfile(principal.getName());
@@ -39,6 +40,7 @@ public class PatientController {
     }
 
     @PutMapping("/profile")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Update patient profile", description = "Updates medical and personal details for the authenticated patient.")
     public ResponseEntity<ApiResponse<PatientResponse>> updateMyProfile(
             Principal principal,
@@ -49,6 +51,7 @@ public class PatientController {
     }
 
     @GetMapping("/health-summary")
+    @PreAuthorize("hasRole('PATIENT')")
     @Operation(summary = "Get patient health summary", description = "Returns computed Age, BMI, Blood Group, Height, Weight, and Emergency Contact details.")
     public ResponseEntity<ApiResponse<HealthSummaryResponse>> getHealthSummary(Principal principal) {
         HealthSummaryResponse response = patientService.getHealthSummary(principal.getName());

@@ -1,5 +1,6 @@
 package com.careflow.common.audit;
 
+import com.careflow.auth.entity.User;
 import com.careflow.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,18 +22,17 @@ public class AuditServiceImpl implements AuditService {
     @Async
     @Transactional
     public void logAudit(String username, String action, String ipAddress, String details) {
-        Long userId = null;
+        User user = null;
         if (username != null && !username.isBlank()) {
-            userId = userRepository.findByEmail(username).map(u -> u.getId()).orElse(null);
+            user = userRepository.findByEmail(username).orElse(null);
         }
 
         AuditLog logEntry = AuditLog.builder()
-                .userId(userId)
-                .username(username != null ? username : "ANONYMOUS")
+                .user(user)
                 .action(action)
                 .ipAddress(ipAddress != null ? ipAddress : "UNKNOWN")
                 .details(details)
-                .timestamp(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         auditLogRepository.save(logEntry);

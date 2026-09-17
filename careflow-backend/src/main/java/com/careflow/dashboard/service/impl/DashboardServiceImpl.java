@@ -1,6 +1,6 @@
 package com.careflow.dashboard.service.impl;
 
-import com.careflow.appointment.dto.response.AppointmentResponse;
+import com.careflow.appointment.dto.AppointmentResponse;
 import com.careflow.appointment.service.AppointmentService;
 import com.careflow.dashboard.dto.PatientDashboardResponse;
 import com.careflow.dashboard.dto.TodayCareResponse;
@@ -8,7 +8,7 @@ import com.careflow.dashboard.service.DashboardService;
 import com.careflow.hospital.dto.response.HospitalLiveStatusResponse;
 import com.careflow.hospital.entity.HospitalLiveStatus;
 import com.careflow.hospital.repository.HospitalLiveStatusRepository;
-import com.careflow.notification.dto.response.NotificationResponse;
+import com.careflow.notification.dto.NotificationResponse;
 import com.careflow.notification.service.NotificationService;
 import com.careflow.patient.dto.HealthSummaryResponse;
 import com.careflow.patient.service.PatientService;
@@ -65,8 +65,8 @@ public class DashboardServiceImpl implements DashboardService {
         List<AppointmentResponse> todayAppointments = allAppointments.stream()
                 .filter(a -> a.getAppointmentDate() != null &&
                         a.getAppointmentDate().equals(today) &&
-                        !"CANCELLED".equalsIgnoreCase(a.getStatus()) &&
-                        !"REJECTED".equalsIgnoreCase(a.getStatus()))
+                        a.getStatus() != com.careflow.appointment.entity.AppointmentStatus.CANCELLED &&
+                        a.getStatus() != com.careflow.appointment.entity.AppointmentStatus.REJECTED)
                 .collect(Collectors.toList());
 
         boolean hasAppointmentToday = !todayAppointments.isEmpty();
@@ -77,8 +77,8 @@ public class DashboardServiceImpl implements DashboardService {
             nextAppointment = allAppointments.stream()
                     .filter(a -> a.getAppointmentDate() != null &&
                             (a.getAppointmentDate().isAfter(today) || a.getAppointmentDate().equals(today)) &&
-                            !"CANCELLED".equalsIgnoreCase(a.getStatus()) &&
-                            !"REJECTED".equalsIgnoreCase(a.getStatus()))
+                            a.getStatus() != com.careflow.appointment.entity.AppointmentStatus.CANCELLED &&
+                            a.getStatus() != com.careflow.appointment.entity.AppointmentStatus.REJECTED)
                     .findFirst()
                     .orElse(null);
         }
@@ -104,7 +104,15 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         // Notifications for patient
-        List<NotificationResponse> notifications = notificationService.getPatientNotifications(email).stream()
+        List<NotificationResponse> notifications = notificationService.getUserNotifications(email).stream()
+                .map(n -> NotificationResponse.builder()
+                        .id(n.getId())
+                        .title(n.getTitle())
+                        .message(n.getMessage())
+                        .type(n.getType())
+                        .read(n.isReadStatus())
+                        .createdAt(n.getCreatedAt())
+                        .build())
                 .limit(5)
                 .collect(Collectors.toList());
 

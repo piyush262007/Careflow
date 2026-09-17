@@ -93,10 +93,15 @@ export const Navbar: React.FC = () => {
   const handleExperienceClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isAuthenticated && user) {
-      const targetRoute = user.role === 'doctor' ? '/doctor' : user.role === 'hospital' ? '/hospitals' : '/patient';
+      const targetRoute =
+        user.role === 'DOCTOR'
+          ? '/doctor/dashboard'
+          : user.role === 'ADMIN'
+          ? '/admin/dashboard'
+          : '/patient/dashboard';
       navigate(targetRoute);
     } else {
-      navigate('/welcome');
+      navigate('/login');
     }
   };
 

@@ -1,32 +1,36 @@
 import { apiClient } from '../api/client';
 
-export interface UserResponse {
-  id: number;
+export interface SpringBootUser {
+  id: number | string;
   fullName: string;
   email: string;
   role: 'PATIENT' | 'DOCTOR' | 'ADMIN';
-  enabled: boolean;
-  createdAt: string;
+  enabled?: boolean;
 }
 
-export interface LoginResponseData {
-  accessToken: string;
-  refreshToken: string;
-  tokenType: string;
-  expiresIn: number;
-  user: UserResponse;
+export interface SpringBootLoginData {
+  token?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  tokenType?: string;
+  userId?: number;
+  fullName?: string;
+  email?: string;
+  role?: 'PATIENT' | 'DOCTOR' | 'ADMIN';
+  user?: SpringBootUser;
+  expiresIn?: number;
 }
 
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
-  timestamp: string;
+  timestamp?: string;
 }
 
 export const authService = {
   async register(data: { fullName: string; email: string; password: string; role?: string }) {
-    const res = await apiClient.post<ApiResponse<UserResponse>>('/auth/register', {
+    const res = await apiClient.post<ApiResponse<SpringBootUser>>('/auth/register', {
       fullName: data.fullName,
       email: data.email,
       password: data.password,
@@ -36,7 +40,7 @@ export const authService = {
   },
 
   async login(email: string, password: string) {
-    const res = await apiClient.post<ApiResponse<LoginResponseData>>('/auth/login', {
+    const res = await apiClient.post<ApiResponse<SpringBootLoginData>>('/auth/login', {
       email,
       password,
     });
@@ -44,15 +48,17 @@ export const authService = {
   },
 
   async getCurrentUser() {
-    const res = await apiClient.get<ApiResponse<UserResponse>>('/auth/me');
+    const res = await apiClient.get<ApiResponse<SpringBootUser>>('/auth/me');
     return res.data;
   },
 
-  async logout(refreshToken: string) {
+  async logout(refreshToken?: string) {
     try {
-      await apiClient.post('/auth/logout', { refreshToken });
+      if (refreshToken) {
+        await apiClient.post('/auth/logout', { refreshToken });
+      }
     } catch {
-      // Ignore network errors on logout
+      // Ignore errors on logout network call
     }
   },
 };

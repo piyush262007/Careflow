@@ -75,9 +75,9 @@ public class PatientServiceImpl implements PatientService {
 
         Double bmi = null;
         String bmiCategory = "Unknown";
-        if (patient.getHeight() != null && patient.getHeight() > 0 && patient.getWeight() != null && patient.getWeight() > 0) {
-            double heightInMeters = patient.getHeight() / 100.0;
-            double calculatedBmi = patient.getWeight() / (heightInMeters * heightInMeters);
+        if (patient.getHeightCm() != null && patient.getHeightCm().doubleValue() > 0 && patient.getWeightKg() != null && patient.getWeightKg().doubleValue() > 0) {
+            double heightInMeters = patient.getHeightCm().doubleValue() / 100.0;
+            double calculatedBmi = patient.getWeightKg().doubleValue() / (heightInMeters * heightInMeters);
             bmi = BigDecimal.valueOf(calculatedBmi).setScale(1, RoundingMode.HALF_UP).doubleValue();
 
             if (bmi < 18.5) bmiCategory = "Underweight";
@@ -96,8 +96,8 @@ public class PatientServiceImpl implements PatientService {
                 .bmi(bmi)
                 .bmiCategory(bmiCategory)
                 .bloodGroup(patient.getBloodGroup())
-                .height(patient.getHeight())
-                .weight(patient.getWeight())
+                .height(patient.getHeightCm() != null ? patient.getHeightCm().doubleValue() : null)
+                .weight(patient.getWeightKg() != null ? patient.getWeightKg().doubleValue() : null)
                 .emergencyContact(emergencyContact)
                 .build();
     }

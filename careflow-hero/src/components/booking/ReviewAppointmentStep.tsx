@@ -8,6 +8,7 @@ interface ReviewAppointmentStepProps {
   selectedTime: string;
   onBack: () => void;
   onConfirm: () => void;
+  isSubmitting?: boolean;
 }
 
 export const ReviewAppointmentStep: React.FC<ReviewAppointmentStepProps> = ({
@@ -15,6 +16,7 @@ export const ReviewAppointmentStep: React.FC<ReviewAppointmentStepProps> = ({
   selectedTime,
   onBack,
   onConfirm,
+  isSubmitting = false,
 }) => {
   const { user } = useAuth();
 
@@ -116,10 +118,11 @@ export const ReviewAppointmentStep: React.FC<ReviewAppointmentStepProps> = ({
 
         <button
           type="button"
+          disabled={isSubmitting}
           onClick={onConfirm}
-          className="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white text-sm font-extrabold flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 cursor-pointer transition-all"
+          className="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white text-sm font-extrabold flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span>Confirm & Request Appointment</span>
+          <span>{isSubmitting ? 'Sending Request...' : 'Confirm & Request Appointment'}</span>
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>

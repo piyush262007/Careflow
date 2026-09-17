@@ -17,13 +17,15 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import lombok.experimental.SuperBuilder;
+
 @Entity
 @Table(name = "patients")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Patient extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)

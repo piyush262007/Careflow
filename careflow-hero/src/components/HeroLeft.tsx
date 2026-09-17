@@ -33,10 +33,15 @@ export const HeroLeft: React.FC = () => {
 
   const handleStartTrial = () => {
     if (isAuthenticated && user) {
-      const targetRoute = user.role === 'doctor' ? '/doctor' : user.role === 'hospital' ? '/hospitals' : '/patient';
+      const targetRoute =
+        user.role === 'DOCTOR'
+          ? '/doctor/dashboard'
+          : user.role === 'ADMIN'
+          ? '/admin/dashboard'
+          : '/patient/dashboard';
       navigate(targetRoute);
     } else {
-      navigate('/welcome');
+      navigate('/login');
     }
   };
 

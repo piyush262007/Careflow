@@ -32,7 +32,7 @@ public class QrPassServiceImpl implements QrPassService {
     @Transactional(readOnly = true)
     public QrPassResponse verifyQrPass(String qrPassCode) {
         log.info("Verifying QR pass code: {}", qrPassCode);
-        Appointment appointment = appointmentRepository.findByQrPassCode(qrPassCode)
+        Appointment appointment = appointmentRepository.findByQrCode(qrPassCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid or non-existent QR Pass code: " + qrPassCode));
 
         return buildResponse(appointment);
@@ -47,7 +47,7 @@ public class QrPassServiceImpl implements QrPassService {
         }
 
         return QrPassResponse.builder()
-                .qrPassCode(appointment.getQrPassCode())
+                .qrPassCode(appointment.getQrCode())
                 .appointmentId(appointment.getId())
                 .patientName(patientName)
                 .doctorName(appointment.getDoctor() != null ? appointment.getDoctor().getFullName() : null)

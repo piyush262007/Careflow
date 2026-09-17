@@ -1,6 +1,7 @@
 package com.careflow.hospital.controller;
 
 import com.careflow.common.response.ApiResponse;
+import com.careflow.hospital.dto.HospitalRecommendationResponse;
 import com.careflow.hospital.dto.HospitalRequest;
 import com.careflow.hospital.dto.HospitalResponse;
 import com.careflow.hospital.service.HospitalService;
@@ -33,28 +34,53 @@ public class HospitalController {
     private final HospitalService hospitalService;
 
     @GetMapping
-    @Operation(summary = "List all hospitals", description = "Retrieves all registered partner hospital facilities.")
-    public ResponseEntity<ApiResponse<List<HospitalResponse>>> getAllHospitals() {
-        List<HospitalResponse> response = hospitalService.getAllHospitals();
+    @Operation(summary = "List all hospitals", description = "Retrieves all registered partner hospital facilities with distance and live queue metrics.")
+    public ResponseEntity<ApiResponse<List<HospitalResponse>>> getAllHospitals(
+            @RequestParam(required = false) Double userLat,
+            @RequestParam(required = false) Double userLng
+    ) {
+        List<HospitalResponse> response = hospitalService.getAllHospitals(userLat, userLng);
         return ResponseEntity.ok(ApiResponse.success(response, "Hospitals retrieved successfully"));
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Search hospitals", description = "Filters hospitals by city, name, emergency availability, or specialization.")
+    @Operation(summary = "Search hospitals", description = "Filters hospitals by city, name, emergency availability, specialization, max distance, or sorting.")
     public ResponseEntity<ApiResponse<List<HospitalResponse>>> searchHospitals(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Boolean emergencyAvailable,
-            @RequestParam(required = false) String specialization
+            @RequestParam(required = false) String specialization,
+            @RequestParam(required = false) Double userLat,
+            @RequestParam(required = false) Double userLng,
+            @RequestParam(required = false) Double maxDistanceKm,
+            @RequestParam(required = false) String sortBy
     ) {
-        List<HospitalResponse> response = hospitalService.searchHospitals(city, name, emergencyAvailable, specialization);
+        List<HospitalResponse> response = hospitalService.searchHospitals(
+                city, name, emergencyAvailable, specialization, userLat, userLng, maxDistanceKm, sortBy
+        );
         return ResponseEntity.ok(ApiResponse.success(response, "Hospital search results retrieved"));
+    }
+
+    @GetMapping("/recommend")
+    @Operation(summary = "Smart hospital recommendation", description = "Generates top hospital recommendation based on distance, wait times, specialist availability, and operational status.")
+    public ResponseEntity<ApiResponse<HospitalRecommendationResponse>> getHospitalRecommendation(
+            @RequestParam(required = false) Double userLat,
+            @RequestParam(required = false) Double userLng,
+            @RequestParam(required = false) String specialization,
+            @RequestParam(required = false, defaultValue = "false") Boolean isEmergency
+    ) {
+        HospitalRecommendationResponse response = hospitalService.getHospitalRecommendation(userLat, userLng, specialization, isEmergency);
+        return ResponseEntity.ok(ApiResponse.success(response, "Hospital recommendation generated successfully"));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get hospital details", description = "Retrieves full hospital details by ID.")
-    public ResponseEntity<ApiResponse<HospitalResponse>> getHospitalById(@PathVariable Long id) {
-        HospitalResponse response = hospitalService.getHospitalById(id);
+    public ResponseEntity<ApiResponse<HospitalResponse>> getHospitalById(
+            @PathVariable Long id,
+            @RequestParam(required = false) Double userLat,
+            @RequestParam(required = false) Double userLng
+    ) {
+        HospitalResponse response = hospitalService.getHospitalById(id, userLat, userLng);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

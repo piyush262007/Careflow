@@ -18,7 +18,7 @@ interface AuthLayoutProps {
 }
 
 export const AuthLayout: React.FC<AuthLayoutProps> = ({ viewOverride }) => {
-  const { activeView: contextView, user, isAuthenticated, isLoading, logoutUser } = useAuth();
+  const { activeView: contextView, user, isAuthenticated, isLoading, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { activeStep, triggerPulse } = useFlowPulse();
   const navigate = useNavigate();
@@ -28,8 +28,14 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ viewOverride }) => {
     return null;
   }
 
+  // If already authenticated, redirect to appropriate role dashboard
   if (isAuthenticated && user) {
-    const targetRoute = user.role === 'doctor' ? '/doctor' : user.role === 'hospital' ? '/hospitals' : '/patient';
+    const targetRoute =
+      user.role === 'DOCTOR'
+        ? '/doctor/dashboard'
+        : user.role === 'ADMIN'
+        ? '/admin/dashboard'
+        : '/patient/dashboard';
     return <Navigate to={targetRoute} replace />;
   }
 
@@ -55,7 +61,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ viewOverride }) => {
       case 'forgot-password':
         return <ForgotPasswordView />;
       default:
-        return <WelcomeView />;
+        return <LoginView />;
     }
   };
 
@@ -102,7 +108,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ viewOverride }) => {
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Signed in as <strong>{user.name}</strong></span>
               <button
-                onClick={logoutUser}
+                onClick={logout}
                 className="ml-1 text-[10px] underline font-bold hover:text-rose-400 cursor-pointer"
               >
                 Sign out

@@ -10,13 +10,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import lombok.experimental.SuperBuilder;
+
 @Entity
 @Table(name = "hospitals")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Hospital extends BaseEntity {
 
     @Column(name = "name", nullable = false, length = 200)
@@ -67,6 +69,10 @@ public class Hospital extends BaseEntity {
     @Builder.Default
     @Column(name = "is_open_24_hours")
     private Boolean isOpen24Hours = true;
+
+    @Builder.Default
+    @Column(name = "is_active")
+    private Boolean isActive = true;
 
     @Column(name = "image_url", length = 500)
     private String imageUrl;

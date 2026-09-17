@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { User, UserCheck, Building2, Check, ArrowRight, ArrowLeft } from 'lucide-react';
+import { User, UserCheck, Check, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import type { UserRole } from '../../../context/AuthContext';
+import type { UserRole } from '../../../services/mockAuthService';
 import { AuthButton } from '../ui/AuthButton';
 
 export const RoleSelectionView: React.FC = () => {
@@ -27,7 +27,7 @@ export const RoleSelectionView: React.FC = () => {
 
   const roles = [
     {
-      id: 'patient' as UserRole,
+      id: 'PATIENT' as UserRole,
       title: 'Patient',
       subtitle: 'Track live queues, manage appointments & view health history',
       icon: User,
@@ -43,7 +43,7 @@ export const RoleSelectionView: React.FC = () => {
       ),
     },
     {
-      id: 'doctor' as UserRole,
+      id: 'DOCTOR' as UserRole,
       title: 'Doctor',
       subtitle: 'AI clinical notes, patient queue suite & schedule management',
       icon: UserCheck,
@@ -58,22 +58,6 @@ export const RoleSelectionView: React.FC = () => {
         </svg>
       ),
     },
-    {
-      id: 'hospital' as UserRole,
-      title: 'Hospital',
-      subtitle: 'Multi-department operations, staff capacity & emergency triage',
-      icon: Building2,
-      badge: 'Enterprise',
-      color: 'purple' as const,
-      accentBg: 'bg-purple-500/10 border-purple-500/30 text-purple-600 dark:text-purple-400',
-      illustration: (
-        <svg className="w-12 h-12 text-purple-500" viewBox="0 0 48 48" fill="none">
-          <path d="M10 40V12L24 6L38 12V40H10Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
-          <path d="M20 20H28M24 16V24" stroke="#A855F7" strokeWidth="2.5" strokeLinecap="round" />
-          <rect x="18" y="30" width="12" height="10" stroke="currentColor" strokeWidth="2" />
-        </svg>
-      ),
-    },
   ];
 
   const currentRoleObj = roles.find((r) => r.id === selectedRole) || roles[0];
@@ -83,6 +67,7 @@ export const RoleSelectionView: React.FC = () => {
       {/* Header */}
       <div>
         <button
+          type="button"
           onClick={handleBack}
           className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors mb-2 cursor-pointer"
         >
@@ -91,28 +76,25 @@ export const RoleSelectionView: React.FC = () => {
         </button>
 
         <h1 className="font-heading font-extrabold text-xl sm:text-2xl tracking-tight text-[var(--text-primary)] mb-1">
-          How will you use CareFlow today?
+          Select Your Workspace Role
         </h1>
         <p className="text-xs text-[var(--text-secondary)]">
-          Select your perspective to personalize your workspace experience.
+          Choose your perspective to personalize your CareFlow experience.
         </p>
       </div>
 
-      {/* 3 Large Cards */}
+      {/* Role Cards */}
       <div className="grid grid-cols-1 gap-3">
         {roles.map((r) => {
           const isSelected = selectedRole === r.id;
 
-          const cardBorders: Record<'blue' | 'emerald' | 'purple', string> = {
+          const cardBorders: Record<'blue' | 'emerald', string> = {
             blue: isSelected
               ? 'border-blue-500 ring-2 ring-blue-500/20 bg-blue-500/10 shadow-md'
               : 'border-[var(--border-color)] hover:border-blue-500/40 bg-[var(--bg-surface)]',
             emerald: isSelected
               ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-500/10 shadow-md'
               : 'border-[var(--border-color)] hover:border-emerald-500/40 bg-[var(--bg-surface)]',
-            purple: isSelected
-              ? 'border-purple-500 ring-2 ring-purple-500/20 bg-purple-500/10 shadow-md'
-              : 'border-[var(--border-color)] hover:border-purple-500/40 bg-[var(--bg-surface)]',
           };
 
           return (
@@ -123,7 +105,6 @@ export const RoleSelectionView: React.FC = () => {
               className={`relative p-4 rounded-2xl border transition-all cursor-pointer ${cardBorders[r.color]}`}
             >
               <div className="flex items-center gap-3">
-                {/* SVG Illustration Container */}
                 <div className={`p-2.5 rounded-xl border shrink-0 ${r.accentBg}`}>
                   {r.illustration}
                 </div>
@@ -151,16 +132,13 @@ export const RoleSelectionView: React.FC = () => {
 
       {/* Bottom Action Controls */}
       <div className="pt-2 space-y-2">
-        <AuthButton
-          variant="primary"
-          icon={ArrowRight}
-          onClick={handleContinue}
-        >
+        <AuthButton variant="primary" icon={ArrowRight} onClick={handleContinue}>
           Continue as {currentRoleObj.title}
         </AuthButton>
 
         <div className="text-center">
           <button
+            type="button"
             onClick={handleLogin}
             className="text-xs font-semibold text-[var(--text-muted)] hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
           >

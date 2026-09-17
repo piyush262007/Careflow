@@ -20,7 +20,7 @@ public class AIRecommendationServiceImpl implements AIRecommendationService {
     @Override
     public AIRecommendationResponse analyzeSymptomsAndRecommendCare(AIRecommendationRequest request) {
         String specialty = determineSpecialty(request);
-        List<HospitalResponse> allHospitals = hospitalService.getAllHospitals(null, null);
+        List<HospitalResponse> allHospitals = hospitalService.getAllHospitals();
 
         HospitalResponse topMatch = allHospitals.isEmpty() ? null : allHospitals.get(0);
         List<HospitalResponse> alternatives = allHospitals.size() > 1 ? allHospitals.subList(1, Math.min(allHospitals.size(), 4)) : new ArrayList<>();

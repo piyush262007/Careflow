@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
 
-    List<AuditLog> findByUsernameOrderByTimestampDesc(String username);
+    List<AuditLog> findByUserEmailOrderByCreatedAtDesc(String email);
 }

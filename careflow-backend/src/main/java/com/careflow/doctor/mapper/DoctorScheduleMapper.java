@@ -16,13 +16,12 @@ public class DoctorScheduleMapper {
 
         return DoctorSchedule.builder()
                 .doctor(doctor)
-                .dayOfWeek(request.getDayOfWeek())
+                .dayOfWeek(request.getDayOfWeek() != null ? request.getDayOfWeek().name() : "MONDAY")
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
                 .slotDurationMinutes(request.getSlotDurationMinutes() != null ? request.getSlotDurationMinutes() : 30)
                 .maxAppointments(request.getMaxAppointments() != null ? request.getMaxAppointments() : 20)
                 .currentAppointments(0)
-                .available(true)
                 .build();
     }
 
@@ -31,17 +30,28 @@ public class DoctorScheduleMapper {
             return null;
         }
 
+        java.time.DayOfWeek dayEnum = null;
+        if (schedule.getDayOfWeek() != null) {
+            try {
+                dayEnum = java.time.DayOfWeek.valueOf(schedule.getDayOfWeek().toUpperCase());
+            } catch (Exception e) {
+                dayEnum = java.time.DayOfWeek.MONDAY;
+            }
+        }
+
+        boolean isAvail = schedule.getCurrentAppointments() < schedule.getMaxAppointments();
+
         return DoctorScheduleResponse.builder()
                 .id(schedule.getId())
                 .doctorId(schedule.getDoctor() != null ? schedule.getDoctor().getId() : null)
                 .doctorName(schedule.getDoctor() != null ? schedule.getDoctor().getFullName() : null)
-                .dayOfWeek(schedule.getDayOfWeek())
+                .dayOfWeek(dayEnum)
                 .startTime(schedule.getStartTime())
                 .endTime(schedule.getEndTime())
                 .slotDurationMinutes(schedule.getSlotDurationMinutes())
                 .maxAppointments(schedule.getMaxAppointments())
                 .currentAppointments(schedule.getCurrentAppointments())
-                .available(schedule.isAvailable())
+                .available(isAvail)
                 .build();
     }
 }

@@ -14,13 +14,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface DoctorMapper {
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "hospital", ignore = true)
     @Mapping(target = "specialization", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     Doctor toEntity(DoctorRequest request);
 
     @Mapping(target = "hospitalId", source = "hospital.id")
@@ -29,13 +24,8 @@ public interface DoctorMapper {
     @Mapping(target = "specializationName", source = "specialization.name")
     DoctorResponse toResponse(Doctor doctor);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "hospital", ignore = true)
     @Mapping(target = "specialization", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     void updateDoctorFromDto(DoctorRequest request, @MappingTarget Doctor doctor);
 
     SpecializationDto toSpecializationDto(Specialization specialization);
@@ -44,11 +34,6 @@ public interface DoctorMapper {
     @Mapping(target = "doctorId", source = "doctor.id")
     DoctorScheduleDto toScheduleDto(DoctorSchedule schedule);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "doctor", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     DoctorSchedule toScheduleEntity(DoctorScheduleDto scheduleDto);
 }

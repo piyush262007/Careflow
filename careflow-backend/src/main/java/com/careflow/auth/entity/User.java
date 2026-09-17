@@ -18,13 +18,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.experimental.SuperBuilder;
+
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "full_name", nullable = false, length = 100)

@@ -90,7 +90,6 @@ class AppointmentServiceTest {
         when(userRepository.findByEmail("patient@careflow.com")).thenReturn(Optional.of(patientUser));
         when(patientRepository.findByUserId(1L)).thenReturn(Optional.of(patient));
         when(doctorRepository.findById(200L)).thenReturn(Optional.of(doctor));
-        when(hospitalRepository.findById(100L)).thenReturn(Optional.of(hospital));
 
         assertThrows(BadRequestException.class, () -> appointmentService.createAppointment("patient@careflow.com", pastRequest));
     }
